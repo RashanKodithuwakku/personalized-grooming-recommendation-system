@@ -1,0 +1,478 @@
+{
+  "male_crew_cut_A": {
+    "points": [
+      [
+        145,
+        320
+      ],
+      [
+        394,
+        337
+      ],
+      [
+        328,
+        101
+      ]
+    ],
+    "image_path": "templates/male\\male_crew_cut_A.jpg"
+  },
+  "male_curly_top_A": {
+    "points": [
+      [
+        199,
+        349
+      ],
+      [
+        354,
+        319
+      ],
+      [
+        216,
+        127
+      ]
+    ],
+    "image_path": "templates/male\\male_curly_top_A.jpg"
+  },
+  "male_curly_top_B": {
+    "points": [
+      [
+        139,
+        285
+      ],
+      [
+        340,
+        295
+      ],
+      [
+        255,
+        111
+      ]
+    ],
+    "image_path": "templates/male\\male_curly_top_B.jpg"
+  },
+  "male_curly_top_C": {
+    "points": [
+      [
+        211,
+        249
+      ],
+      [
+        358,
+        224
+      ],
+      [
+        196,
+        103
+      ]
+    ],
+    "image_path": "templates/male\\male_curly_top_C.jpg"
+  },
+  "male_short_stubble_A": {
+    "points": [
+      [
+        134,
+        311
+      ],
+      [
+        394,
+        309
+      ],
+      [
+        258,
+        103
+      ]
+    ],
+    "image_path": "templates/male\\male_short_stubble_A.jpg"
+  },
+  "male_side_part_A": {
+    "points": [
+      [
+        163,
+        294
+      ],
+      [
+        340,
+        282
+      ],
+      [
+        238,
+        113
+      ]
+    ],
+    "image_path": "templates/male\\male_side_part_A.jpg"
+  },
+  "male_side_part_B": {
+    "points": [
+      [
+        162,
+        239
+      ],
+      [
+        345,
+        243
+      ],
+      [
+        263,
+        86
+      ]
+    ],
+    "image_path": "templates/male\\male_side_part_B.jpg"
+  },
+  "male_side_part_C": {
+    "points": [
+      [
+        140,
+        372
+      ],
+      [
+        391,
+        363
+      ],
+      [
+        254,
+        151
+      ]
+    ],
+    "image_path": "templates/male\\male_side_part_C.jpg"
+  },
+  "male_textured_crop_A": {
+    "points": [
+      [
+        163,
+        315
+      ],
+      [
+        355,
+        316
+      ],
+      [
+        254,
+        157
+      ]
+    ],
+    "image_path": "templates/male\\male_textured_crop_A.jpg"
+  },
+  "male_textured_crop_B": {
+    "points": [
+      [
+        153,
+        320
+      ],
+      [
+        385,
+        320
+      ],
+      [
+        263,
+        135
+      ]
+    ],
+    "image_path": "templates/male\\male_textured_crop_B.jpg"
+  },
+  "male_textured_crop_C": {
+    "points": [
+      [
+        190,
+        247
+      ],
+      [
+        343,
+        251
+      ],
+      [
+        258,
+        116
+      ]
+    ],
+    "image_path": "templates/male\\male_textured_crop_C.jpg"
+  },
+  "female_bob_cut_A": {
+    "points": [
+      [
+        246,
+        273
+      ],
+      [
+        348,
+        263
+      ],
+      [
+        302,
+        161
+      ]
+    ],
+    "image_path": "templates/female\\female_bob_cut_A.jpg"
+  },
+  "female_curly_layered_A": {
+    "points": [
+      [
+        193,
+        225
+      ],
+      [
+        328,
+        223
+      ],
+      [
+        283,
+        79
+      ]
+    ],
+    "image_path": "templates/female\\female_curly_layered_A.jpg"
+  },
+  "female_curly_layered_B": {
+    "points": [
+      [
+        162,
+        269
+      ],
+      [
+        296,
+        285
+      ],
+      [
+        262,
+        65
+      ]
+    ],
+    "image_path": "templates/female\\female_curly_layered_B.jpg"
+  },
+  "female_curly_layered_C": {
+    "points": [
+      [
+        214,
+        240
+      ],
+      [
+        328,
+        247
+      ],
+      [
+        306,
+        127
+      ]
+    ],
+    "image_path": "templates/female\\female_curly_layered_C.jpg"
+  },
+  "female_long_layered_A": {
+    "points": [
+      [
+        210,
+        199
+      ],
+      [
+        354,
+        196
+      ],
+      [
+        235,
+        76
+      ]
+    ],
+    "image_path": "templates/female\\female_long_layered_A.jpg"
+  },
+  "female_long_layered_B": {
+    "points": [
+      [
+        194,
+        214
+      ],
+      [
+        314,
+        216
+      ],
+      [
+        250,
+        76
+      ]
+    ],
+    "image_path": "templates/female\\female_long_layered_B.jpg"
+  },
+  "female_pixie_cut_A": {
+    "points": [
+      [
+        197,
+        361
+      ],
+      [
+        341,
+        343
+      ],
+      [
+        209,
+        118
+      ]
+    ],
+    "image_path": "templates/female\\female_pixie_cut_A.jpg"
+  },
+  "female_pixie_cut_B": {
+    "points": [
+      [
+        205,
+        373
+      ],
+      [
+        340,
+        347
+      ],
+      [
+        236,
+        141
+      ]
+    ],
+    "image_path": "templates/female\\female_pixie_cut_B.jpg"
+  },
+  "female_pixie_cut_C": {
+    "points": [
+      [
+        144,
+        315
+      ],
+      [
+        320,
+        320
+      ],
+      [
+        228,
+        99
+      ]
+    ],
+    "image_path": "templates/female\\female_pixie_cut_C.jpg"
+  },
+  "male_curly_top_D": {
+    "points": [
+      [
+        189,
+        315
+      ],
+      [
+        322,
+        319
+      ],
+      [
+        260,
+        97
+      ]
+    ],
+    "image_path": "templates/male\\male_curly_top_D.JPG"
+  },
+  "male_full_beard_A": {
+    "points": [
+      [
+        155,
+        329
+      ],
+      [
+        355,
+        318
+      ],
+      [
+        231,
+        61
+      ]
+    ],
+    "image_path": "templates/male\\male_full_beard_A.JPG"
+  },
+  "male_full_beard_B": {
+    "points": [
+      [
+        112,
+        260
+      ],
+      [
+        220,
+        265
+      ],
+      [
+        171,
+        99
+      ]
+    ],
+    "image_path": "templates/male\\male_full_beard_B.PNG"
+  },
+  "male_short_beard_A": {
+    "points": [
+      [
+        179,
+        299
+      ],
+      [
+        315,
+        301
+      ],
+      [
+        250,
+        120
+      ]
+    ],
+    "image_path": "templates/male\\male_short_beard_A.JPG"
+  },
+  "male_short_beard_B": {
+    "points": [
+      [
+        240,
+        236
+      ],
+      [
+        343,
+        239
+      ],
+      [
+        290,
+        100
+      ]
+    ],
+    "image_path": "templates/male\\male_short_beard_B.JPG"
+  },
+  "male_short_stubble_B": {
+    "points": [
+      [
+        169,
+        272
+      ],
+      [
+        318,
+        287
+      ],
+      [
+        269,
+        83
+      ]
+    ],
+    "image_path": "templates/male\\male_short_stubble_B.JPG"
+  },
+  "male_short_stubble_C": {
+    "points": [
+      [
+        193,
+        313
+      ],
+      [
+        326,
+        317
+      ],
+      [
+        261,
+        102
+      ]
+    ],
+    "image_path": "templates/male\\male_short_stubble_C.JPG"
+  },
+  "female_bob_cut_B": {
+    "points": [
+      [
+        202,
+        347
+      ],
+      [
+        329,
+        356
+      ],
+      [
+        282,
+        115
+      ]
+    ],
+    "image_path": "templates/female\\female_bob_cut_B.JPG"
+  }
+}
