@@ -1,0 +1,161 @@
+{
+  "request_id": "4ea4041a-3b8c-47f2-ae5c-bbd3572f87fd",
+  "artifact_version": "ga-4b0e56fb97be-22ee6cc3f167-c95a526790c2-f882305d61d3",
+  "ranking_policy": {
+    "policy_name": "hybrid_model_rank_v1",
+    "description": "Provisional hybrid ordering without rule parameters: 0.70 * normalized predicted compatibility + 0.30 * within-category rank percentile (weights configurable; not research-validated).",
+    "weights": {
+      "predicted_compatibility": 0.7,
+      "rank_percentile": 0.3,
+      "rule_compatibility": 0.0
+    },
+    "provisional": true,
+    "note": "These are provisional application weights, not learned or research-validated weights, and not the original training formula."
+  },
+  "recommendation_confidence_status": "not_calibrated",
+  "input_quality": {
+    "confidence_status": "provided",
+    "input_quality_score": 0.515,
+    "coverage": 0.6,
+    "attributes_provided": [
+      "face_shape",
+      "forehead",
+      "gender",
+      "hairline",
+      "jawline",
+      "symmetry"
+    ],
+    "attributes_missing": [
+      "face_length_ratio",
+      "jaw_width_ratio",
+      "lower_face_ratio",
+      "upper_width_ratio"
+    ],
+    "low_confidence_attributes": [],
+    "caution_flag": true,
+    "caution_threshold": 0.6,
+    "note": "input_quality_score is a heuristic summary of upstream attribute confidence (mean confidence \u00d7 coverage). It does not measure recommendation correctness."
+  },
+  "skipped_categories": [],
+  "category_results": [
+    {
+      "category": "hair",
+      "status": "ok",
+      "eligible_count": 8,
+      "returned_count": 3,
+      "recommendations": [
+        {
+          "rank": 1,
+          "style_id": "H008",
+          "style_name": "Long layers",
+          "raw_ranker_score": 11.868285419932208,
+          "raw_predicted_compatibility_rating": 4.123972886108361,
+          "display_compatibility_rating": 4.123972886108361,
+          "compatibility_score": 78.09932215270902,
+          "hybrid_score": 0.846695255068963
+        },
+        {
+          "rank": 2,
+          "style_id": "H001",
+          "style_name": "Crew cut",
+          "raw_ranker_score": 5.964265232853873,
+          "raw_predicted_compatibility_rating": 3.8363710640137785,
+          "display_compatibility_rating": 3.8363710640137785,
+          "compatibility_score": 70.90927660034446,
+          "hybrid_score": 0.7588649362024111
+        },
+        {
+          "rank": 3,
+          "style_id": "H003",
+          "style_name": "Side part",
+          "raw_ranker_score": 4.8716919112591235,
+          "raw_predicted_compatibility_rating": 3.759698740959335,
+          "display_compatibility_rating": 3.759698740959335,
+          "compatibility_score": 68.99246852398338,
+          "hybrid_score": 0.7079472796678836
+        }
+      ]
+    },
+    {
+      "category": "beard",
+      "status": "ok",
+      "eligible_count": 4,
+      "returned_count": 3,
+      "recommendations": [
+        {
+          "rank": 1,
+          "style_id": "B003",
+          "style_name": "Short boxed beard",
+          "raw_ranker_score": 6.589879978879043,
+          "raw_predicted_compatibility_rating": 3.994935703841648,
+          "display_compatibility_rating": 3.994935703841648,
+          "compatibility_score": 74.8733925960412,
+          "hybrid_score": 0.8241137481722884
+        },
+        {
+          "rank": 2,
+          "style_id": "B002",
+          "style_name": "Short stubble",
+          "raw_ranker_score": 4.248513800891996,
+          "raw_predicted_compatibility_rating": 3.827756971037843,
+          "display_compatibility_rating": 3.827756971037843,
+          "compatibility_score": 70.69392427594607,
+          "hybrid_score": 0.7198574699316225
+        },
+        {
+          "rank": 3,
+          "style_id": "B004",
+          "style_name": "Goatee",
+          "raw_ranker_score": -5.924439238282871,
+          "raw_predicted_compatibility_rating": 3.3442070576042533,
+          "display_compatibility_rating": 3.3442070576042533,
+          "compatibility_score": 58.605176440106334,
+          "hybrid_score": 0.5602362350807443
+        }
+      ]
+    },
+    {
+      "category": "grooming",
+      "status": "ok",
+      "eligible_count": 4,
+      "returned_count": 3,
+      "recommendations": [
+        {
+          "rank": 1,
+          "style_id": "G002",
+          "style_name": "Straight brow styling",
+          "raw_ranker_score": 3.867508515915571,
+          "raw_predicted_compatibility_rating": 3.9375979737681446,
+          "display_compatibility_rating": 3.9375979737681446,
+          "compatibility_score": 73.43994934420361,
+          "hybrid_score": 0.8140796454094252
+        },
+        {
+          "rank": 2,
+          "style_id": "G001",
+          "style_name": "Natural brow maintenance",
+          "raw_ranker_score": 0.8382744813489534,
+          "raw_predicted_compatibility_rating": 3.766689754269877,
+          "display_compatibility_rating": 3.766689754269877,
+          "compatibility_score": 69.16724385674694,
+          "hybrid_score": 0.7091707069972284
+        },
+        {
+          "rank": 3,
+          "style_id": "G003",
+          "style_name": "Soft-angled brow styling",
+          "raw_ranker_score": -2.5643047141137005,
+          "raw_predicted_compatibility_rating": 3.588382657784022,
+          "display_compatibility_rating": 3.588382657784022,
+          "compatibility_score": 64.70956644460055,
+          "hybrid_score": 0.6029669651122038
+        }
+      ]
+    }
+  ],
+  "notes": [
+    "Raw ranker scores are not probabilities and must not be compared across categories.",
+    "compatibility_score is a rescaled predicted rating, not accuracy or confidence.",
+    "recommendation_confidence is null (status=not_calibrated) until calibration evidence exists."
+  ]
+}
