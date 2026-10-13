@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "profile": {
+    "face_length_ratio": 1.1075061748845896,
+    "jaw_width_ratio": 0.7981134693568468,
+    "upper_width_ratio": 0.8836110941414184,
+    "lower_face_ratio": 0.519768052719499,
+    "symmetry": 0.8105352571132579,
+    "face_shape": "round",
+    "jawline": "soft",
+    "forehead": "low",
+    "hairline": "straight",
+    "gender": "male"
+  },
+  "categories": ["hair", "beard", "grooming"],
+  "top_n": 3,
+  "preferences": {
+    "include_beard": true,
+    "facial_hair_available": true,
+    "excluded_style_ids": []
+  },
+  "attribute_confidence": {
+    "face_shape": 0.91,
+    "jawline": 0.88,
+    "forehead": 0.84,
+    "hairline": 0.80,
+    "gender": 0.97,
+    "symmetry": 0.75
+  }
+}
