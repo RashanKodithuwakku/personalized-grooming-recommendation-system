@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0",
+  "profile": {
+    "face_length_ratio": 1.4741868136966976,
+    "jaw_width_ratio": 0.7022803446346432,
+    "upper_width_ratio": 0.8874882194850102,
+    "lower_face_ratio": 0.4261109355990833,
+    "symmetry": 0.5257072408486533,
+    "face_shape": "round",
+    "jawline": "soft",
+    "forehead": "high",
+    "hairline": "receding",
+    "gender": "female"
+  },
+  "categories": ["hair", "beard", "grooming"],
+  "top_n": 3,
+  "preferences": {
+    "facial_hair_available": false,
+    "excluded_style_ids": []
+  }
+}
