@@ -1,0 +1,36 @@
+{
+  "version": "1.0-template",
+  "description": "TEMPLATE ONLY. Original rating_parameters.json was not present in this repository. Replace this file with the verified research rule parameters before enabling weighted rules. Do not treat this template as the original formula.",
+  "weights": {
+    "face_shape": 0.25,
+    "jawline": 0.20,
+    "forehead": 0.15,
+    "hairline": 0.15,
+    "symmetry": 0.15,
+    "face_length_ratio": 0.10
+  },
+  "attributes": {
+    "scoring": {
+      "face_shape": { "mode": "categorical_match" },
+      "jawline": { "mode": "categorical_match" },
+      "forehead": { "mode": "categorical_match" },
+      "hairline": { "mode": "categorical_match" },
+      "symmetry": {
+        "mode": "numeric_distance",
+        "default_target": 0.7,
+        "tolerance": 0.3
+      },
+      "face_length_ratio": {
+        "mode": "numeric_distance",
+        "default_target": 1.35,
+        "tolerance": 0.2
+      }
+    },
+    "style_targets": {
+      "H001": {
+        "face_shape": ["oval", "square", "oblong"],
+        "jawline": ["angular"]
+      }
+    }
+  }
+}
