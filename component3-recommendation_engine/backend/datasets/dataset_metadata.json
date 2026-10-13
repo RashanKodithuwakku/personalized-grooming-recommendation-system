@@ -1,0 +1,25 @@
+{
+  "created_at": "20261008T125113_199583Z",
+  "profiles": 6000,
+  "training_rows": 84000,
+  "gender_distribution": {
+    "male": 3000,
+    "female": 3000
+  },
+  "category_rows": {
+    "hair": 48000,
+    "grooming": 24000,
+    "beard": 12000
+  },
+  "gender_category_rows": {
+    "beard_male": 12000,
+    "grooming_female": 12000,
+    "grooming_male": 12000,
+    "hair_female": 24000,
+    "hair_male": 24000
+  },
+  "female_beard_rows": 0,
+  "rating_source": "rule_generated",
+  "human_reviewed": false,
+  "expert_validated": false
+}
