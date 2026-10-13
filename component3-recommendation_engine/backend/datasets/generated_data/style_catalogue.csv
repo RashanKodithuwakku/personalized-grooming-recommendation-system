@@ -1,0 +1,17 @@
+style_id,category,style_name,definition,reference_image,catalogue_status,definition_status,gender_restriction,requires_facial_hair,availability_constraints_validated
+H001,hair,Crew cut,Short hair on top with closely cut sides.,,provisional,provisional,none,False,False
+H002,hair,Textured crop,Short textured top with a forward fringe.,,provisional,provisional,none,False,False
+H003,hair,Side part,Hair styled with a visible side part.,,provisional,provisional,none,False,False
+H004,hair,Layered cut,Haircut with multiple lengths or layers.,,provisional,provisional,none,False,False
+B001,beard,Clean shaven,Beard and moustache hair removed.,,provisional,provisional,none,False,False
+B002,beard,Short stubble,Very short visible facial-hair stubble.,,provisional,provisional,none,True,False
+B003,beard,Short boxed beard,Short beard covering the jaw and chin with defined edges.,,provisional,provisional,none,True,False
+B004,beard,Goatee,Facial hair concentrated around the chin and mouth.,,provisional,provisional,none,True,False
+H005,hair,Bob cut,A bob haircut around chin to shoulder length.,,provisional,provisional,none,False,False
+H006,hair,Pixie cut,A short pixie haircut with a shaped top and sides.,,provisional,provisional,none,False,False
+H007,hair,Shoulder-length layers,A shoulder-length haircut with graduated layers.,,provisional,provisional,none,False,False
+H008,hair,Long layers,A longer haircut with layers below shoulder level.,,provisional,provisional,none,False,False
+G001,grooming,Natural brow maintenance,Maintain the existing eyebrow outline with minimal tidying.,,provisional,provisional,none,False,False
+G002,grooming,Straight brow styling,A predominantly straight eyebrow outline.,,provisional,provisional,none,False,False
+G003,grooming,Soft-angled brow styling,An eyebrow outline with a gentle angular arch.,,provisional,provisional,none,False,False
+G004,grooming,Rounded brow styling,An eyebrow outline with a softly rounded arch.,,provisional,provisional,none,False,False
