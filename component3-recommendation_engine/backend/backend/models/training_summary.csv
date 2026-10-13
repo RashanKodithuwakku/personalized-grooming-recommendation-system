@@ -1,0 +1,5 @@
+model,training_rows,validation_rows,trees,gender_feature_used,reload_verified
+hair_ranker_gender_aware,33600,7200,1200,True,True
+beard_ranker_gender_aware,8380,1816,893,True,True
+grooming_ranker_gender_aware,16800,3600,596,True,True
+compatibility_scorer_gender_aware,58780,12616,1600,True,True

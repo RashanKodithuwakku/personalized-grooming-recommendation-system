@@ -1,0 +1,13 @@
+{
+  "run_folder": "/content/drive/MyDrive/Nimesha_Component3/model_runs/Component3_GenderAware_20261008T123658_164628Z",
+  "catboost_version": "1.2.10",
+  "model_count": 4,
+  "gender_feature_used": true,
+  "female_beard_rows_removed": true,
+  "model_hashes": {
+    "beard_ranker_gender_aware.cbm": "22ee6cc3f167e0c2b67a74073e28c3682af8d0e833a0ca841d7850e695b96ef9",
+    "compatibility_scorer_gender_aware.cbm": "f882305d61d3428180959a075d79060d09a5d309983d9e75640e05d96ae42a75",
+    "grooming_ranker_gender_aware.cbm": "c95a526790c2822f7d5680023d121238c8177e5080c60b9d8786b8585820b4e8",
+    "hair_ranker_gender_aware.cbm": "4b0e56fb97bed82f24ddd848b8a314e7b689177efe53dfd7aeea11425daa8bf2"
+  }
+}
