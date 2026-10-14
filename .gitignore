@@ -6,6 +6,9 @@
 *.swp
 .buildlog/
 .history
+venv/
+__pycache__/
+*.pyc
 
 
 
