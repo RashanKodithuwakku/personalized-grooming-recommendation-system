@@ -21,6 +21,7 @@ from face_shape.geometry import prepare_landmarks
 from face_shape.indices import measure_ratios
 from face_shape.membership import confidence_vector, tier1_scores
 from face_shape.tier1 import classify_tier1
+from face_shape.api import create_app
 from face_shape.tier2 import classify_face
 
 __all__ = [
@@ -28,6 +29,7 @@ __all__ = [
     "FACE_SHAPES",
     "MEDIAPIPE_FACE_MESH_INDEX",
     "ClassificationInput",
+    "create_app",
     "classify_face",
     "classify_tier1",
     "FaceShapeResult",
