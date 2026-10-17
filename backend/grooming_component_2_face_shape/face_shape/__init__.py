@@ -17,6 +17,9 @@ from face_shape.contracts import (
     Tier2Landmarks,
     parse_named_landmarks,
 )
+from face_shape.geometry import prepare_landmarks
+from face_shape.indices import measure_ratios
+from face_shape.membership import confidence_vector, tier1_scores
 
 __all__ = [
     "CORE_LANDMARKS",
@@ -29,7 +32,11 @@ __all__ = [
     "RatioFeatures",
     "Tier1Landmarks",
     "Tier2Landmarks",
+    "confidence_vector",
+    "measure_ratios",
     "parse_named_landmarks",
+    "prepare_landmarks",
+    "tier1_scores",
 ]
 
 __version__ = "0.1.0"
