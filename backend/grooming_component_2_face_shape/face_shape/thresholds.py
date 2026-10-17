@@ -76,6 +76,14 @@ CLASS_TRAPEZOIDS: dict[FaceShapeName, dict[str, Trapezoid]] = {
 }
 
 
+# Total face height / bizygomatic breadth. Typical faces sit near 1.30.
+# Oblong membership is full from 1.55 upward.
+TFI_OBLONG = Trapezoid(a=1.40, b=1.55)
+
+# Soft window around the JMI 83 tie. Full weight on 81-85.
+JAW_TIE_BAND = Trapezoid(79.0, 81.0, 85.0, 87.0)
+
+
 def _coverage() -> None:
     for name in FACE_SHAPES:
         features = CLASS_TRAPEZOIDS[name]
