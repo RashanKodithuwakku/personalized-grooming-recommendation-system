@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "grooming-component-2-face-shape"
+version = "0.1.0"
+description = "Face shape classification component for the personalised grooming recommendation system."
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2.9",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["face_shape*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
