@@ -1,0 +1,278 @@
+{
+  "term_order": [
+    "face_length_ratio",
+    "jaw_width_ratio",
+    "upper_width_ratio",
+    "lower_face_ratio",
+    "face_shape",
+    "jawline",
+    "forehead",
+    "hairline",
+    "symmetry"
+  ],
+  "weights": {
+    "hair": [
+      0.16,
+      0.08,
+      0.08,
+      0.05,
+      0.22,
+      0.08,
+      0.12,
+      0.14,
+      0.07
+    ],
+    "beard": [
+      0.12,
+      0.17,
+      0.05,
+      0.12,
+      0.16,
+      0.16,
+      0.05,
+      0.05,
+      0.12
+    ],
+    "grooming": [
+      0.08,
+      0.1,
+      0.08,
+      0.08,
+      0.12,
+      0.15,
+      0.13,
+      0.1,
+      0.16
+    ]
+  },
+  "ratio_scales": [
+    0.2,
+    0.12,
+    0.1,
+    0.12
+  ],
+  "symmetry_scale": 0.25,
+  "categorical_match_score": 1.0,
+  "categorical_nonmatch_score": 0.35,
+  "preference_order": [
+    "face_shape",
+    "jawline",
+    "forehead",
+    "hairline",
+    "symmetry"
+  ],
+  "style_preferences": {
+    "H001": [
+      "oval",
+      "soft",
+      "low",
+      "straight",
+      0.85
+    ],
+    "H002": [
+      "oblong",
+      "angular",
+      "high",
+      "receding",
+      0.65
+    ],
+    "H003": [
+      "round",
+      "rounded",
+      "medium",
+      "widows_peak",
+      0.75
+    ],
+    "H004": [
+      "square",
+      "angular",
+      "high",
+      "rounded",
+      0.55
+    ],
+    "B001": [
+      "oval",
+      "angular",
+      "medium",
+      "straight",
+      0.9
+    ],
+    "B002": [
+      "heart",
+      "soft",
+      "high",
+      "rounded",
+      0.75
+    ],
+    "B003": [
+      "round",
+      "rounded",
+      "low",
+      "receding",
+      0.55
+    ],
+    "B004": [
+      "square",
+      "angular",
+      "medium",
+      "widows_peak",
+      0.65
+    ],
+    "H005": [
+      "oblong",
+      "soft",
+      "medium",
+      "straight",
+      0.75
+    ],
+    "H006": [
+      "oval",
+      "angular",
+      "low",
+      "rounded",
+      0.85
+    ],
+    "H007": [
+      "square",
+      "angular",
+      "high",
+      "widows_peak",
+      0.65
+    ],
+    "H008": [
+      "round",
+      "rounded",
+      "medium",
+      "straight",
+      0.7
+    ],
+    "G001": [
+      "oval",
+      "soft",
+      "medium",
+      "rounded",
+      0.9
+    ],
+    "G002": [
+      "oblong",
+      "soft",
+      "high",
+      "straight",
+      0.75
+    ],
+    "G003": [
+      "round",
+      "rounded",
+      "medium",
+      "widows_peak",
+      0.65
+    ],
+    "G004": [
+      "square",
+      "angular",
+      "low",
+      "receding",
+      0.7
+    ]
+  },
+  "style_ratio_targets": {
+    "H001": [
+      1.45,
+      0.8,
+      0.96,
+      0.43
+    ],
+    "H002": [
+      1.38,
+      0.86,
+      0.95,
+      0.43
+    ],
+    "H003": [
+      1.25,
+      0.9,
+      0.96,
+      0.44
+    ],
+    "H004": [
+      1.3,
+      0.76,
+      0.91,
+      0.42
+    ],
+    "B001": [
+      1.45,
+      0.9,
+      0.95,
+      0.45
+    ],
+    "B002": [
+      1.35,
+      0.84,
+      0.95,
+      0.43
+    ],
+    "B003": [
+      1.22,
+      0.78,
+      0.94,
+      0.4
+    ],
+    "B004": [
+      1.2,
+      0.91,
+      0.95,
+      0.4
+    ],
+    "H005": [
+      1.4,
+      0.78,
+      0.94,
+      0.43
+    ],
+    "H006": [
+      1.32,
+      0.84,
+      0.95,
+      0.42
+    ],
+    "H007": [
+      1.28,
+      0.87,
+      0.96,
+      0.44
+    ],
+    "H008": [
+      1.24,
+      0.88,
+      0.95,
+      0.43
+    ],
+    "G001": [
+      1.32,
+      0.82,
+      0.95,
+      0.43
+    ],
+    "G002": [
+      1.48,
+      0.8,
+      0.96,
+      0.44
+    ],
+    "G003": [
+      1.24,
+      0.88,
+      0.95,
+      0.42
+    ],
+    "G004": [
+      1.3,
+      0.9,
+      0.97,
+      0.43
+    ]
+  },
+  "formula": "rating = 1 + 4 * weighted_compatibility",
+  "parameter_status": "provisional_unvalidated"
+}

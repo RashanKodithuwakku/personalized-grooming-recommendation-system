@@ -1,0 +1,51 @@
+{
+  "profile_features": [
+    "face_length_ratio",
+    "jaw_width_ratio",
+    "upper_width_ratio",
+    "lower_face_ratio",
+    "symmetry",
+    "face_shape",
+    "jawline",
+    "forehead",
+    "hairline",
+    "gender"
+  ],
+  "model_features": [
+    "face_length_ratio",
+    "jaw_width_ratio",
+    "upper_width_ratio",
+    "lower_face_ratio",
+    "symmetry",
+    "face_shape",
+    "jawline",
+    "forehead",
+    "hairline",
+    "gender",
+    "style_id",
+    "category"
+  ],
+  "categorical_features": [
+    "face_shape",
+    "jawline",
+    "forehead",
+    "hairline",
+    "gender",
+    "style_id",
+    "category"
+  ],
+  "gender_values": [
+    "male",
+    "female"
+  ],
+  "categories": [
+    "hair",
+    "beard",
+    "grooming"
+  ],
+  "female_beard_rows_removed": true,
+  "rating_column": "rating",
+  "ranking_group": "query_id",
+  "rating_source": "rule_generated",
+  "profile_source": "balanced_generated_profiles"
+}
