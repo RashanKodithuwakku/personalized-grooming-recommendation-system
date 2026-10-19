@@ -1,0 +1,14 @@
+# Python Environments
+venv/
+env/
+
+# Cache Files
+__pycache__/
+*.pyc
+
+# Machine Learning Models 
+*.pth
+*.pkl
+
+# Saved Facial Profile JSON Outputs
+outputs/
