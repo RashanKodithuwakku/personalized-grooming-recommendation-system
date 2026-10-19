@@ -1,0 +1,75 @@
+{
+  "schema_version": "1.0.0",
+  "request_id": "3f9c2a7e-6b1d-4e0a-9c55-1d2f8a7b4c10",
+  "captured_at": "2026-10-17T14:05:32Z",
+  "source": {
+    "component": "component1",
+    "landmark_model": "c1-landmark-lite-v0.3",
+    "hairline_model": "c1-hairline-v0.2",
+    "pose_method": "cv2.solvePnP"
+  },
+  "image": {
+    "width": 1080,
+    "height": 1440,
+    "coordinate_mode": "pixel",
+    "mirrored_corrected": true
+  },
+  "quality": {
+    "status": "accepted",
+    "confidence": 0.91,
+    "blur_variance_laplacian": 184.6,
+    "brightness_ok": true,
+    "contrast_ok": true,
+    "face_count": 1,
+    "face_size_ratio": 0.58,
+    "neutral_expression": true
+  },
+  "pose": {
+    "yaw": 1.8,
+    "pitch": -2.4,
+    "roll": 0.6,
+    "units": "degrees",
+    "pose_ok": true
+  },
+  "landmarks": {
+    "nasion":             { "xy": [540.0, 600.0],  "visible": true, "confidence": 0.97 },
+    "menton":             { "xy": [542.0, 1140.0], "visible": true, "confidence": 0.95 },
+    "zygion_r":           { "xy": [230.0, 690.0],  "visible": true, "confidence": 0.90 },
+    "zygion_l":           { "xy": [851.0, 692.0],  "visible": true, "confidence": 0.90 },
+    "gonion_r":           { "xy": [300.0, 1010.0], "visible": true, "confidence": 0.88 },
+    "gonion_l":           { "xy": [782.0, 1013.0], "visible": true, "confidence": 0.87 },
+    "frontotemporale_r":  { "xy": [300.0, 430.0],  "visible": true, "confidence": 0.84 },
+    "frontotemporale_l":  { "xy": [779.0, 431.0],  "visible": true, "confidence": 0.83 },
+    "trichion":           { "xy": [540.0, 330.0],  "visible": true, "confidence": 0.79 },
+    "glabella":           { "xy": [540.0, 560.0],  "visible": true, "confidence": 0.96 },
+    "subnasale":          { "xy": [541.0, 830.0],  "visible": true, "confidence": 0.96 },
+    "endocanthion_r":     { "xy": [470.0, 640.0],  "visible": true, "confidence": 0.98 },
+    "endocanthion_l":     { "xy": [610.0, 641.0],  "visible": true, "confidence": 0.98 },
+    "exocanthion_r":      { "xy": [380.0, 645.0],  "visible": true, "confidence": 0.97 },
+    "exocanthion_l":      { "xy": [701.0, 647.0],  "visible": true, "confidence": 0.97 },
+    "alare_r":            { "xy": [490.0, 820.0],  "visible": true, "confidence": 0.95 },
+    "alare_l":            { "xy": [591.0, 821.0],  "visible": true, "confidence": 0.95 },
+    "cheilion_r":         { "xy": [450.0, 960.0],  "visible": true, "confidence": 0.94 },
+    "cheilion_l":         { "xy": [632.0, 962.0],  "visible": true, "confidence": 0.94 }
+  },
+  "jawline": {
+    "jaw_type": "angular",
+    "confidence": 0.84,
+    "contour": [
+      [250.0, 760.0], [262.0, 830.0], [278.0, 900.0], [300.0, 1010.0],
+      [345.0, 1070.0], [410.0, 1110.0], [480.0, 1132.0], [542.0, 1140.0],
+      [604.0, 1133.0], [674.0, 1112.0], [738.0, 1072.0], [782.0, 1013.0],
+      [804.0, 902.0], [820.0, 832.0], [832.0, 762.0]
+    ]
+  },
+  "hairline": {
+    "visible": true,
+    "confidence": 0.79,
+    "pattern": "straight",
+    "polyline": [
+      [300.0, 430.0], [340.0, 392.0], [390.0, 364.0], [450.0, 344.0],
+      [540.0, 330.0], [630.0, 345.0], [690.0, 366.0], [740.0, 394.0], [779.0, 431.0]
+    ]
+  },
+  "processing_notes": []
+}

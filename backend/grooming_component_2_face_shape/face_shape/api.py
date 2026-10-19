@@ -16,6 +16,8 @@ from face_shape.contracts import (
     parse_named_landmarks,
 )
 from face_shape.indices import DegenerateMeasurement
+from face_shape.payload import Component1Payload
+from face_shape.pipeline import FacialProfile, analyse_profile
 from face_shape.tier2 import classify_face
 
 
@@ -51,6 +53,14 @@ class FaceShapeResponse(BaseModel):
 
 def create_app() -> FastAPI:
     app = FastAPI(title="Face shape classification")
+
+    @app.get("/health")
+    def health() -> dict[str, str]:
+        return {"status": "ok"}
+
+    @app.post("/v1/profile", response_model=FacialProfile)
+    def profile(body: Component1Payload) -> FacialProfile:
+        return analyse_profile(body)
 
     @app.post("/api/component-2/face-shape", response_model=FaceShapeResponse)
     def identify_face(body: FaceShapeRequest) -> FaceShapeResponse:
