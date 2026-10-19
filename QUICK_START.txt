@@ -1,0 +1,82 @@
+════════════════════════════════════════════════════════════════
+  QUICK START GUIDE - Facial Profiling Backend
+════════════════════════════════════════════════════════════════
+
+STEP 1: DOWNLOAD FACEDETECTOR MODEL
+────────────────────────────────────────────────────────────────
+cd backend\grooming_component_1_backend\backend\models
+download_face_detector.bat
+
+Official URL (if script fails):
+https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite
+
+
+STEP 2: CHECK PORT 8000
+────────────────────────────────────────────────────────────────
+netstat -ano | findstr :8000
+
+If processes found, kill them:
+taskkill /PID [PID_NUMBER] /F
+
+
+STEP 3: START BACKEND
+────────────────────────────────────────────────────────────────
+cd C:\Users\Admin\Desktop\grooming\backend\grooming_component_1_backend
+python -m uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000
+
+Expected output:
+  INFO:     Application startup complete.
+  INFO:     Uvicorn running on http://0.0.0.0:8000
+
+
+STEP 4: TEST
+────────────────────────────────────────────────────────────────
+Option A - Swagger UI:
+  Open: http://127.0.0.1:8000/docs
+  Click /analyze_face → Try it out → Upload image → Execute
+
+Option B - CLI:
+  python test_backend.py path\to\test_image.jpg
+
+Option C - Flutter App:
+  Run app → Upload Photo → Analyze Face
+
+
+WHAT TO EXPECT
+────────────────────────────────────────────────────────────────
+✓ Half-body photo → "Face too small in the image..."
+✓ Close-up selfie → Analysis succeeds (hairline/jawline results)
+✓ No person → "No face detected..."
+✓ Multiple people → "Multiple faces detected..."
+✓ Turned head → Pose rejection message
+
+Terminal shows debug logs:
+  [DEBUG] Input image size: W x H
+  [DEBUG] Stage A: Face box width = X px (Y%)
+  [DEBUG] Stage B: Face crop size = W x H
+  [DEBUG] Pose angles: pitch=X yaw=Y roll=Z
+
+JSON saved to:
+  backend/grooming_component_1_backend/outputs/profiles/<image_name>.json
+
+
+FLUTTER CONFIG
+────────────────────────────────────────────────────────────────
+lib/config/api_config.dart already configured:
+  baseUrl = 'http://10.0.2.2:8000' (Android emulator)
+
+Endpoint: POST /analyze_face
+Field: 'image' (UploadFile)
+
+
+TROUBLESHOOTING
+────────────────────────────────────────────────────────────────
+✗ Server won't start → Check port 8000, kill existing processes
+✗ Model not found → Run download_face_detector.bat
+✗ No POST in terminal → Check Flutter baseUrl, firewall
+✗ Wrong rejection reason → Check terminal debug logs
+
+
+For full details, see: BACKEND_SETUP.md
+For implementation details, see: IMPLEMENTATION_SUMMARY.md
+════════════════════════════════════════════════════════════════

@@ -1,0 +1,8 @@
+{
+  "hairline_result": "",
+  "hairline_confidence": 0.0,
+  "jawline_result": "",
+  "jawline_confidence": 0.0,
+  "message": "No face detected",
+  "is_success": false
+}

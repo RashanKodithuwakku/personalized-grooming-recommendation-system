@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+python-multipart
+torch
+torchvision
+mediapipe>=0.10.9
+joblib
+scikit-learn
+xgboost
+opencv-python
