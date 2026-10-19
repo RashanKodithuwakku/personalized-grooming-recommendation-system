@@ -242,7 +242,7 @@ def parse_named_landmarks(payload: Mapping[str, object]) -> ClassificationInput:
         for name, point in named.items()
         if name not in REQUIRED_LANDMARKS
         and name not in OPTIONAL_SHAPE_LANDMARKS
-        and name != "jaw_type"
+        and name not in {"jaw_type", "image"}
     }
     tier2_payload: dict[str, object] = {}
     if "trichion" in named:
