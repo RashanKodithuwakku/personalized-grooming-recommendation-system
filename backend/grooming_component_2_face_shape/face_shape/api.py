@@ -1,9 +1,4 @@
-"""HTTP mapping from Component 1 landmarks to a face-shape result.
-
-The response carries the identified class, its confidence vector, the ratio
-features, and any hairline or jawline payload supplied by Component 1.
-Symmetry and balance are outside this endpoint.
-"""
+"""HTTP mapping from Component 1 landmarks to a face-shape result."""
 
 from typing import Any
 
@@ -13,8 +8,10 @@ from pydantic import BaseModel, ConfigDict, Field
 from face_shape.contracts import (
     AppliedModifier,
     FaceShapeName,
+    ImageSpec,
     JawTypeObservation,
     LandmarkPoint,
+    MorphologicalClass,
     RatioFeatures,
     parse_named_landmarks,
 )
@@ -29,6 +26,7 @@ class FaceShapeRequest(BaseModel):
 
     landmarks: dict[str, LandmarkPoint]
     jaw_type: JawTypeObservation | None = None
+    image: ImageSpec | None = None
     hairline: dict[str, Any] | None = None
     jawline: dict[str, Any] | None = None
 
@@ -39,10 +37,14 @@ class FaceShapeResponse(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     face_type: FaceShapeName
+    face_shape_label: FaceShapeName
+    face_shape_class: MorphologicalClass | None = None
     face_type_confidence: dict[FaceShapeName, float]
     ratios: RatioFeatures
     modifiers_applied: list[AppliedModifier] = Field(default_factory=list)
     jaw_type: JawTypeObservation | None = None
+    baseline_label: FaceShapeName | None = None
+    processing_notes: list[str] = Field(default_factory=list)
     hairline: dict[str, Any] | None = None
     jawline: dict[str, Any] | None = None
 
@@ -57,6 +59,8 @@ def create_app() -> FastAPI:
         }
         if body.jaw_type is not None:
             payload["jaw_type"] = body.jaw_type.model_dump()
+        if body.image is not None:
+            payload["image"] = body.image.model_dump()
         try:
             sample = parse_named_landmarks(payload)
             result = classify_face(sample)
@@ -64,10 +68,14 @@ def create_app() -> FastAPI:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
         return FaceShapeResponse(
             face_type=result.face_type,
+            face_shape_label=result.face_type,
+            face_shape_class=result.face_shape_class,
             face_type_confidence=result.face_type_confidence,
             ratios=result.ratios,
             modifiers_applied=result.modifiers_applied,
             jaw_type=result.jaw_type,
+            baseline_label=result.baseline_label,
+            processing_notes=result.processing_notes,
             hairline=body.hairline,
             jawline=body.jawline,
         )

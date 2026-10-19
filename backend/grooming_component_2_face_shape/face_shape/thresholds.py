@@ -1,15 +1,14 @@
-"""Trapezoidal class intervals for MFI, JMI, and FZI.
+"""Trapezoidal class intervals for the locked production rules.
 
-Plateaus follow the published bands: Martin mesoprosopic MFI 85.0-89.9,
-Farkas oval JMI and FZI near 75-82, Marinescu square jaw at JMI 83, and the
-narrow-jaw band below JMI 72. Each ramp is the soft boundary around that
-band. The JMI ramps of oval, round, and square meet across 81-85, which is
-the jaw-type tie region used by the second tier.
+Core plateaus follow Section 8 of the Component 2 handover:
+Oblong MFI >= 90, Square JMI > 83 with MFI < 90, Round MFI < 85 and
+JMI 75-83, Oval MFI 85-89.9 and JMI 75-83, Heart/Diamond JMI < 75.
+The literature cut JMI < 72 is kept only as LITERATURE_NARROW_JMI.
 """
 
 from dataclasses import dataclass
 
-from face_shape.contracts import FACE_SHAPES, FaceShapeName
+from face_shape.contracts import FaceShapeName
 
 
 @dataclass(frozen=True)
@@ -42,53 +41,51 @@ def _require_pair(foot: float | None, shoulder: float | None, side: str) -> None
         raise ValueError(f"{side} trapezoid edge needs both foot and shoulder")
 
 
+# Production JMI cut between Round/Oval and Heart/Diamond. Literature used 72.
+NARROW_JMI = 75.0
+LITERATURE_NARROW_JMI = 72.0
+SQUARE_JMI = 83.0
+OBLONG_MFI = 90.0
+OVAL_MFI_LOW = 85.0
+OVAL_MFI_HIGH = 89.9
+HEART_FZI = 78.0
+DIAMOND_FZI = 75.0
+FZI_BROAD = 82.0
+FZI_NARROW = 75.0
+
 CLASS_TRAPEZOIDS: dict[FaceShapeName, dict[str, Trapezoid]] = {
     "oval": {
-        "mfi": Trapezoid(80.0, 85.0, 89.9, 95.0),
-        "jmi": Trapezoid(72.0, 75.0, 81.0, 85.0),
-        "fzi": Trapezoid(71.0, 75.0, 82.0, 86.0),
+        "mfi": Trapezoid(80.0, 85.0, 89.9, 93.0),
+        "jmi": Trapezoid(70.0, 75.0, 83.0, 87.0),
     },
     "round": {
-        "mfi": Trapezoid(c=80.0, d=88.0),
-        "jmi": Trapezoid(78.0, 86.0, 98.0, 106.0),
-        "fzi": Trapezoid(74.0, 80.0, 92.0, 98.0),
+        "mfi": Trapezoid(c=85.0, d=90.0),
+        "jmi": Trapezoid(70.0, 75.0, 83.0, 87.0),
     },
     "square": {
-        "mfi": Trapezoid(76.0, 82.0, 92.0, 98.0),
-        "jmi": Trapezoid(81.0, 85.0, 98.0, 106.0),
-        "fzi": Trapezoid(74.0, 80.0, 92.0, 98.0),
+        "mfi": Trapezoid(c=90.0, d=95.0),
+        "jmi": Trapezoid(75.0, 83.0),
     },
     "oblong": {
-        "mfi": Trapezoid(a=90.0, b=97.0),
-        "jmi": Trapezoid(68.0, 74.0, 84.0, 90.0),
-        "fzi": Trapezoid(70.0, 75.0, 86.0, 92.0),
+        "mfi": Trapezoid(a=85.0, b=90.0),
     },
     "heart": {
-        "mfi": Trapezoid(78.0, 84.0, 96.0, 104.0),
-        "jmi": Trapezoid(c=70.0, d=76.0),
-        "fzi": Trapezoid(74.0, 80.0, 96.0, 102.0),
+        "jmi": Trapezoid(c=75.0, d=83.0),
+        "fzi": Trapezoid(a=70.0, b=75.0),
     },
     "diamond": {
-        "mfi": Trapezoid(78.0, 84.0, 96.0, 104.0),
-        "jmi": Trapezoid(c=70.0, d=76.0),
-        "fzi": Trapezoid(c=72.0, d=78.0),
+        "jmi": Trapezoid(c=75.0, d=83.0),
+        "fzi": Trapezoid(c=75.0, d=78.0),
     },
 }
 
-
-# Total face height / bizygomatic breadth. Typical faces sit near 1.30.
-# Oblong membership is full from 1.55 upward.
+# Total face height / bizygomatic. Typical faces sit near 1.30-1.45.
 TFI_OBLONG = Trapezoid(a=1.40, b=1.55)
+OVAL_TFI_PENALTY = 0.35
 
-# Soft window around the JMI 83 tie. Full weight on 81-85.
-JAW_TIE_BAND = Trapezoid(79.0, 81.0, 85.0, 87.0)
-
-
-def _coverage() -> None:
-    for name in FACE_SHAPES:
-        features = CLASS_TRAPEZOIDS[name]
-        if set(features) != {"mfi", "jmi", "fzi"}:
-            raise ValueError(f"{name} is missing a tier-1 feature interval")
+# Jaw-type weight peaks at the JMI 83 Square vs Round/Oval boundary.
+JAW_TIE_BAND = Trapezoid(79.0, 83.0, 83.0, 87.0)
 
 
-_coverage()
+def class_features(name: FaceShapeName) -> tuple[str, ...]:
+    return tuple(CLASS_TRAPEZOIDS[name])

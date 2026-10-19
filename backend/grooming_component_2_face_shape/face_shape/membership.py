@@ -23,7 +23,11 @@ def trapezoid_membership(value: float, interval: Trapezoid) -> float:
 
 
 def geometric_mean(values: list[float]) -> float:
-    """Conjunction of feature memberships. A zero feature blocks the class."""
+    """Conjunction of available feature memberships.
+
+    Invalid features are omitted by the caller. A remaining zero still blocks
+    the class.
+    """
 
     if not values or any(value <= 0.0 for value in values):
         return 0.0
@@ -31,20 +35,73 @@ def geometric_mean(values: list[float]) -> float:
 
 
 def tier1_scores(ratios: RatioFeatures) -> dict[FaceShapeName, float]:
-    """Score each class from MFI, JMI, and FZI only."""
+    """Score each class from MFI, JMI, and FZI when those values exist."""
 
-    if ratios.mfi is None or ratios.jmi is None or ratios.fzi is None:
-        raise ValueError("tier-1 scores require mfi, jmi, and fzi")
+    if ratios.mfi is None or ratios.jmi is None:
+        raise ValueError("tier-1 scores require mfi and jmi")
 
-    observed = {"mfi": ratios.mfi, "jmi": ratios.jmi, "fzi": ratios.fzi}
+    observed: dict[str, float] = {"mfi": ratios.mfi, "jmi": ratios.jmi}
+    fzi_valid = ratios.fzi is not None
+    if fzi_valid:
+        observed["fzi"] = ratios.fzi
+
     scores: dict[FaceShapeName, float] = {}
     for name in FACE_SHAPES:
         memberships = [
             trapezoid_membership(observed[feature], interval)
             for feature, interval in CLASS_TRAPEZOIDS[name].items()
+            if feature in observed
         ]
-        scores[name] = geometric_mean(memberships)
+        scores[name] = geometric_mean(memberships) if memberships else 0.0
+
+    if fzi_valid:
+        scores["oval"] *= oval_fzi_factor(ratios.jmi, ratios.fzi)
+        scores["square"] *= square_fzi_factor(ratios.jmi, ratios.fzi)
+        scores["heart"] *= heart_relation(ratios.jmi, ratios.fzi)
+        scores["diamond"] *= diamond_relation(ratios.jmi, ratios.fzi)
+    else:
+        scores["heart"] = 0.0
+        scores["diamond"] = 0.0
     return scores
+
+
+def oval_fzi_factor(jmi: float, fzi: float) -> float:
+    """Full credit when FZI >= JMI - 3, then a six-point linear drop."""
+
+    gap = (jmi - 3.0) - fzi
+    if gap <= 0.0:
+        return 1.0
+    return max(0.0, 1.0 - gap / 6.0)
+
+
+def square_fzi_factor(jmi: float, fzi: float) -> float:
+    """Lower Square when the forehead is much narrower than the jaw."""
+
+    if fzi >= jmi - 6.0:
+        return 1.0
+    deficit = (jmi - 6.0) - fzi
+    return max(0.4, 1.0 - deficit / 10.0)
+
+
+def heart_relation(jmi: float, fzi: float) -> float:
+    """Heart needs FZI >= 75 and FZI >= JMI + 6."""
+
+    if fzi < 75.0:
+        return 0.0
+    delta = fzi - jmi
+    if delta >= 6.0:
+        return 1.0
+    if delta <= 4.0:
+        return 0.0
+    return (delta - 4.0) / 2.0
+
+
+def diamond_relation(jmi: float, fzi: float) -> float:
+    """Diamond takes the leftover narrow-jaw cases that are not Heart."""
+
+    if fzi < 75.0:
+        return 1.0
+    return 1.0 - heart_relation(jmi, fzi)
 
 
 def confidence_vector(scores: dict[FaceShapeName, float]) -> dict[FaceShapeName, float]:

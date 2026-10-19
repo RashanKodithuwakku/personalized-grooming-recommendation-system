@@ -1,13 +1,14 @@
 """Face shape classification component.
 
 Tier 1 uses eight anthropometric landmarks. Tier 2 may add trichion and a
-jaw-type observation. Symmetry and balance are outside this component.
+jaw-type observation. Symmetry and balance are separate scoring modules.
 """
 
 from face_shape.contracts import (
     CORE_LANDMARKS,
     FACE_SHAPES,
     MEDIAPIPE_FACE_MESH_INDEX,
+    REQUIRED_LANDMARKS,
     ClassificationInput,
     FaceShapeResult,
     JawTypeObservation,
@@ -28,6 +29,7 @@ __all__ = [
     "CORE_LANDMARKS",
     "FACE_SHAPES",
     "MEDIAPIPE_FACE_MESH_INDEX",
+    "REQUIRED_LANDMARKS",
     "ClassificationInput",
     "create_app",
     "classify_face",

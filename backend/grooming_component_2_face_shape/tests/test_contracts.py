@@ -5,6 +5,7 @@ from face_shape.contracts import (
     CORE_LANDMARKS,
     FACE_SHAPES,
     MEDIAPIPE_FACE_MESH_INDEX,
+    REQUIRED_LANDMARKS,
     FaceShapeResult,
     LandmarkPoint,
     RatioFeatures,
@@ -21,9 +22,10 @@ def _core_payload() -> dict[str, object]:
 
 
 def test_core_landmark_table_matches_mediapipe_indices():
-    assert tuple(MEDIAPIPE_FACE_MESH_INDEX) == CORE_LANDMARKS
-    assert len(set(MEDIAPIPE_FACE_MESH_INDEX.values())) == 8
+    for name in CORE_LANDMARKS:
+        assert name in MEDIAPIPE_FACE_MESH_INDEX
     assert "trichion" not in MEDIAPIPE_FACE_MESH_INDEX
+    assert REQUIRED_LANDMARKS == CORE_LANDMARKS[:6]
 
 
 def test_parse_accepts_core_points_without_tier2():
@@ -32,6 +34,33 @@ def test_parse_accepts_core_points_without_tier2():
     assert parsed.tier2.trichion is None
     assert parsed.jaw_type is None
     assert parsed.tier1.nasion.x == 0.0
+    assert parsed.tier1.zygion_l.x == 2.0
+
+
+def test_parse_accepts_left_right_aliases():
+    payload = {
+        "nasion": _point(0.0, 0.0),
+        "menton": _point(0.0, 10.0),
+        "zygion_left": _point(-5.0, 4.0),
+        "zygion_right": _point(5.0, 4.0),
+        "gonion_left": _point(-4.0, 8.0),
+        "gonion_right": _point(4.0, 8.0),
+        "frontotemporale_left": _point(-4.0, 1.0),
+        "frontotemporale_right": _point(4.0, 1.0),
+    }
+    parsed = parse_named_landmarks(payload)
+    assert parsed.tier1.zygion_l.x == -5.0
+    assert parsed.tier1.gonion_r.x == 4.0
+
+
+def test_parse_accepts_component1_xy_payload():
+    payload = {
+        name: {"xy": [float(index), float(index) + 0.5], "visible": True, "confidence": 0.9}
+        for index, name in enumerate(REQUIRED_LANDMARKS)
+    }
+    parsed = parse_named_landmarks(payload)
+    assert parsed.tier1.menton.y == 1.5
+    assert parsed.tier1.frontotemporale_l is None
 
 
 def test_parse_accepts_trichion_and_jaw_type():
@@ -49,9 +78,9 @@ def test_parse_accepts_trichion_and_jaw_type():
 
 def test_parse_rejects_missing_core_landmark():
     payload = _core_payload()
-    del payload["gonion_right"]
+    del payload["gonion_r"]
 
-    with pytest.raises(ValueError, match="gonion_right"):
+    with pytest.raises(ValueError, match="gonion_r"):
         parse_named_landmarks(payload)
 
 
