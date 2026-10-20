@@ -536,7 +536,7 @@ class CompatibilityRulesService:
                 diagnostics.append(f"{name}[{idx}] must be a finite positive number")
             nums.append(number)
         return nums
-
+      # Gaussian method measures how similar a value is to the target value.
     @staticmethod
     def gaussian_similarity(value: float, target: float, scale: float) -> float:
         if scale <= 0:
