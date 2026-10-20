@@ -51,6 +51,9 @@ class Settings(BaseSettings):
             "http://127.0.0.1:8080",
         ]
     )
+    # Flutter web dev servers use a random localhost port. This regex allows
+    # only loopback HTTP(S) origins. LAN devices do not use browser CORS.
+    cors_origin_regex: str | None = r"https?://(localhost|127\.0\.0\.1)(:\d+)?$"
     cors_allow_credentials: bool = False
 
     catboost_thread_count: int = Field(default=1, ge=1, le=32)
@@ -98,6 +101,15 @@ class Settings(BaseSettings):
         if not path.is_absolute():
             path = (BACKEND_ROOT / path).resolve()
         return path
+
+    @field_validator("cors_origin_regex", mode="before")
+    @classmethod
+    def _empty_regex(cls, value: Any) -> str | None:
+        if value is None:
+            return None
+        if isinstance(value, str) and not value.strip():
+            return None
+        return str(value)
 
     @field_validator("cors_origins", mode="before")
     @classmethod
