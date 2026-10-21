@@ -1,0 +1,5 @@
+﻿Provenance
+Source file: backend/models/gender_evaluation.csv
+Copied for the Flutter evaluation screen. Values were not edited.
+Run identifier: models/run_information.json run_folder Component3_GenderAware_20261008T123658_164628Z
+These metrics measure agreement with rule-generated ratings, not human suitability.
