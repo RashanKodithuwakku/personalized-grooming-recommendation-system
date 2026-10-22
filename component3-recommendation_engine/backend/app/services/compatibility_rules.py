@@ -464,7 +464,7 @@ class CompatibilityRulesService:
                 "Invalid template rule weights",
                 diagnostics=["weights must be a non-empty object"],
             )
-        # Build a synthetic original-format parameter set with equal ratio targets.
+        # Build a  original-format parameter set with equal ratio targets.
         term_weights = []
         for term in EXPECTED_TERM_ORDER:
             term_weights.append(float(weights_obj.get(term, 0.0)))
