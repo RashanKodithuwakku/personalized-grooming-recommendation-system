@@ -9,11 +9,14 @@ from face_shape.geometry import prepare_landmarks
 from face_shape.indices import DegenerateMeasurement
 from face_shape.payload import Component1Payload, to_classification_input
 from face_shape.score.balance import BalanceResult, score_balance
+from face_shape.score.composite import score_composite, shape_confidence
 from face_shape.score.symmetry import PairDeviation, SymmetryResult, score_symmetry
 from face_shape.thresholds import FZI_BROAD, FZI_NARROW
 from face_shape.tier2 import classify_face
 
 
+# Forehead width from FZI and height from the upper-third fraction.
+# Either field stays null when its measurement is missing.
 class ForeheadCategory(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -22,7 +25,7 @@ class ForeheadCategory(BaseModel):
 
 
 class FacialProfile(BaseModel):
-    """C3-facing profile. Composite weights are intentionally omitted."""
+    """Profile sent to the recommendation layer and the result screen."""
 
     model_config = ConfigDict(extra="forbid")
 
@@ -46,12 +49,19 @@ class FacialProfile(BaseModel):
     vertical_balance_score: float | None = None
     horizontal_balance_score: float | None = None
     balance_score: float | None = None
+    shape_score: float | None = None
+    compatibility_score: float | None = None
+    grooming_suitability_index: float | None = None
+    score_weights: dict[str, float] = Field(default_factory=dict)
     reliability: float | None = None
     rationale: str | None = None
     processing_notes: list[str] = Field(default_factory=list)
 
 
+# One Component 1 payload in, one profile out. Rejected captures and
+# missing landmarks return status error and do not invent scores.
 def analyse_profile(payload: Component1Payload) -> FacialProfile:
+    # Component 1 already refused the frame, or reported its own error.
     notes = list(payload.processing_notes)
     if payload.quality.status == "rejected" or payload.error is not None:
         code = "LOW_CONFIDENCE"
@@ -76,6 +86,9 @@ def analyse_profile(payload: Component1Payload) -> FacialProfile:
             processing_notes=notes + [str(exc)],
         )
 
+    # Shape, symmetry, and balance are computed independently, then
+    # combined. A missing optional landmark limits the profile instead
+    # of failing the whole request.
     symmetry = score_symmetry(
         prepared,
         yaw=payload.pose.yaw,
@@ -95,6 +108,11 @@ def analyse_profile(payload: Component1Payload) -> FacialProfile:
     }
     if limited.intersection(notes) or not payload.pose.pose_ok:
         status = "limited_analysis"
+
+    # Display composite: 0.50 winning shape confidence, 0.25 symmetry,
+    # 0.25 balance. No proportion term.
+    shape_score = shape_confidence(shape.face_type_confidence)
+    composite = score_composite(shape_score, symmetry.symmetry_score, balance.balance_score)
 
     return FacialProfile(
         request_id=payload.request_id,
@@ -116,12 +134,18 @@ def analyse_profile(payload: Component1Payload) -> FacialProfile:
         vertical_balance_score=balance.vertical_balance_score,
         horizontal_balance_score=balance.horizontal_balance_score,
         balance_score=balance.balance_score,
+        shape_score=composite.shape_score,
+        compatibility_score=composite.compatibility_score,
+        grooming_suitability_index=composite.grooming_suitability_index,
+        score_weights=composite.weights,
         reliability=_reliability(payload.quality.confidence, payload.pose.pose_ok, notes),
-        rationale=_rationale(shape.face_type, shape.face_type_confidence, symmetry, balance),
+        rationale=_rationale(shape.face_type, shape.face_type_confidence, symmetry, balance, composite.grooming_suitability_index),
         processing_notes=notes,
     )
 
 
+# FZI at or above 82 is broad, at or below 75 is narrow.
+# Upper third at or above 0.34 is a high forehead, at or below 0.28 is low.
 def _forehead(ratios: RatioFeatures, balance: BalanceResult) -> ForeheadCategory:
     width = None
     if ratios.fzi is not None:
@@ -143,6 +167,8 @@ def _forehead(ratios: RatioFeatures, balance: BalanceResult) -> ForeheadCategory
     return ForeheadCategory(width=width, height=height)
 
 
+# Start from Component 1 confidence and discount pose error, a missing
+# upper third, a missing forehead, or an unresolved narrow jaw.
 def _reliability(quality: float, pose_ok: bool, notes: list[str]) -> float:
     value = quality
     if not pose_ok or "symmetry_pose_limited" in notes:
@@ -154,7 +180,8 @@ def _reliability(quality: float, pose_ok: bool, notes: list[str]) -> float:
     return max(0.0, min(1.0, value))
 
 
-def _rationale(label, confidence, symmetry: SymmetryResult, balance: BalanceResult) -> str:
+# One sentence the result screen can show under the suitability index.
+def _rationale(label, confidence, symmetry: SymmetryResult, balance: BalanceResult, index: float | None) -> str:
     parts = [f"everyday type {label}"]
     if confidence:
         parts.append(f"confidence {confidence[label]:.2f}")
@@ -162,4 +189,6 @@ def _rationale(label, confidence, symmetry: SymmetryResult, balance: BalanceResu
         parts.append(f"symmetry {symmetry.symmetry_score:.2f}")
     if balance.balance_score is not None:
         parts.append(f"balance {balance.balance_score:.2f}")
+    if index is not None:
+        parts.append(f"suitability {index:.1f}")
     return "; ".join(parts)

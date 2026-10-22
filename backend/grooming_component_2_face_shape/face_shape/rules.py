@@ -4,6 +4,9 @@ from face_shape.contracts import FaceShapeName, MorphologicalClass, RatioFeature
 from face_shape.thresholds import OBLONG_MFI, OVAL_MFI_LOW, SQUARE_JMI, NARROW_JMI
 
 
+# Martin-Saller bands on MFI. These five names are reported beside the
+# everyday label; they do not choose oval/round/square/oblong/heart/diamond.
+# Cuts: <80 hyper-eury, <85 eury, <90 meso, <95 lepto, otherwise hyper-lepto.
 def morphological_class(mfi: float) -> MorphologicalClass:
     if mfi < 80.0:
         return "Hypereuryprosopic"
@@ -19,6 +22,9 @@ def morphological_class(mfi: float) -> MorphologicalClass:
 def hard_threshold_label(ratios: RatioFeatures, notes: list[str]) -> FaceShapeName | None:
     """Marinescu-style evaluation baseline. Does not replace production scores."""
 
+    # Locked cuts, applied in order: long face, wide jaw, short mid jaw,
+    # mid-length mid jaw, then narrow jaw split by forehead breadth.
+    # A missing FZI on a narrow jaw is left unresolved rather than guessed.
     if ratios.mfi is None or ratios.jmi is None:
         return None
     mfi = ratios.mfi

@@ -41,6 +41,8 @@ def _require_pair(foot: float | None, shoulder: float | None, side: str) -> None
         raise ValueError(f"{side} trapezoid edge needs both foot and shoulder")
 
 
+# Locked numeric cuts. JMI 75 separates a mid jaw from a narrow jaw.
+# Literature used 72; that value is kept only for comparison.
 # Production JMI cut between Round/Oval and Heart/Diamond. Literature used 72.
 NARROW_JMI = 75.0
 LITERATURE_NARROW_JMI = 72.0
@@ -53,6 +55,10 @@ DIAMOND_FZI = 75.0
 FZI_BROAD = 82.0
 FZI_NARROW = 75.0
 
+# One trapezoid per feature of each class. A missing side is open:
+# oblong has no upper MFI foot, square jaw has no upper JMI foot,
+# round has no lower MFI foot. FZI trapezoids apply only to heart
+# and diamond; the other classes adjust FZI with the relational factors.
 CLASS_TRAPEZOIDS: dict[FaceShapeName, dict[str, Trapezoid]] = {
     "oval": {
         "mfi": Trapezoid(80.0, 85.0, 89.9, 93.0),
@@ -87,5 +93,6 @@ OVAL_TFI_PENALTY = 0.35
 JAW_TIE_BAND = Trapezoid(79.0, 83.0, 83.0, 87.0)
 
 
+# Feature names that class is scored on before relational adjustments.
 def class_features(name: FaceShapeName) -> tuple[str, ...]:
     return tuple(CLASS_TRAPEZOIDS[name])

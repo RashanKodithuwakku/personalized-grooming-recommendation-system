@@ -1,3 +1,9 @@
+"""Builders for synthetic faces used by the unit tests.
+
+point() makes one landmark. face() places zygion 100 units apart so the
+requested MFI, JMI, and FZI become the measured percentage indices.
+"""
+
 from face_shape.contracts import (
     ClassificationInput,
     ImageSpec,
@@ -8,6 +14,7 @@ from face_shape.contracts import (
 )
 
 
+# One landmark. z is optional and is dropped later by the geometry step.
 def point(x: float, y: float, z: float | None = None, visible: bool = True) -> LandmarkPoint:
     payload: dict[str, float | bool | None] = {"x": x, "y": y, "visible": visible}
     if z is not None:
@@ -15,6 +22,8 @@ def point(x: float, y: float, z: float | None = None, visible: bool = True) -> L
     return LandmarkPoint.model_validate(payload)
 
 
+# Build a face whose measured MFI, JMI, and FZI match the arguments,
+# because bizygomatic breadth is fixed at 100.
 def face(
     mfi: float,
     jmi: float,

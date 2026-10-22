@@ -23,12 +23,16 @@ from face_shape.thresholds import JAW_TIE_BAND, OVAL_TFI_PENALTY, TFI_OBLONG
 from face_shape.tier1 import select_face_type
 
 
+# Which classes a jaw label suppresses and which class it lifts.
+# Tapered has empty tuples, so it records no change.
 @dataclass(frozen=True)
 class JawRule:
     suppress: tuple[FaceShapeName, ...] = ()
     boost: tuple[FaceShapeName, ...] = ()
 
 
+# Angular jaw argues for square against round and oval.
+# Rounded jaw argues for round against square.
 JAW_RULES: dict[JawTypeName, JawRule] = {
     "angular": JawRule(suppress=("round", "oval"), boost=("square",)),
     "rounded": JawRule(suppress=("square",), boost=("round",)),
@@ -39,6 +43,9 @@ JAW_RULES: dict[JawTypeName, JawRule] = {
 def classify_face(sample: ClassificationInput) -> FaceShapeResult:
     """Identify the face shape through tier 1 and the optional modifiers."""
 
+    # Start from the tier-1 scores, then let TFI and jaw type adjust them.
+    # The winning class, normalised confidence, and baseline are rebuilt
+    # from the adjusted scores.
     ratios = measure_ratios(prepare_landmarks(sample))
     notes: list[str] = []
     scores = tier1_scores(ratios)
@@ -65,6 +72,8 @@ def apply_modifiers(
     jmi: float | None,
     sample: ClassificationInput,
 ) -> tuple[dict[FaceShapeName, float], list[AppliedModifier]]:
+    # TFI is applied first, then jaw type. The modifier list records
+    # only a rule that actually changed a score, in that same order.
     adjusted = dict(scores)
     modifiers: list[AppliedModifier] = []
     adjusted, tfi_applied = apply_tfi(adjusted, tfi)
@@ -81,6 +90,8 @@ def apply_tfi(
     scores: dict[FaceShapeName, float],
     tfi: float | None,
 ) -> tuple[dict[FaceShapeName, float], bool]:
+    # No trichion means TFI is unused. A positive oblong membership
+    # raises oblong to at least that value and reduces oval in proportion.
     if tfi is None:
         return scores, False
     mu_tfi = trapezoid_membership(tfi, TFI_OBLONG)
@@ -97,6 +108,8 @@ def apply_jaw(
     jmi: float,
     sample: ClassificationInput,
 ) -> tuple[dict[FaceShapeName, float], bool]:
+    # Weight is high only near JMI 83 and only when Component 1 is
+    # confident. Outside that band the jaw label is ignored.
     jaw = sample.jaw_type
     if jaw is None:
         return scores, False
@@ -114,5 +127,6 @@ def apply_jaw(
     return updated, updated != scores
 
 
+# Move a class score toward 1 by the jaw weight, without exceeding 1.
 def _lift(score: float, weight: float) -> float:
     return score + weight * (1.0 - score)

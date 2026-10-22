@@ -10,10 +10,15 @@ from dataclasses import dataclass
 from face_shape.geometry import FrontalPoint, PreparedLandmarks, distance
 
 
+# Target shares of total face height: upper, middle, lower.
+# South Asian published means; marked unverified until the source table
+# is transcribed. Equal fifths each take one fifth of bizygomatic breadth.
 THIRD_MEANS = (0.31, 0.34, 0.35)
 FIFTH_MEAN = 0.20
 
 
+# vertical and horizontal are each 0-1. balance_score is their mean.
+# thirds and fifths are the raw fractions the frontend can draw.
 @dataclass(frozen=True)
 class BalanceResult:
     vertical_balance_score: float | None
@@ -24,6 +29,8 @@ class BalanceResult:
     notes: tuple[str, ...] = ()
 
 
+# Score the vertical thirds and the horizontal fifths separately, then
+# average whichever of the two could be measured.
 def score_balance(prepared: PreparedLandmarks) -> BalanceResult:
     points = prepared.points
     notes: list[str] = []
@@ -44,6 +51,9 @@ def score_balance(prepared: PreparedLandmarks) -> BalanceResult:
     )
 
 
+# Full thirds need trichion, glabella, subnasale, and menton.
+# Without trichion only the mid-to-lower ratio is scored, and the
+# result is flagged limited_upper_third.
 def _vertical(
     points: dict[str, FrontalPoint],
 ) -> tuple[dict[str, float], float | None, list[str]]:
@@ -56,6 +66,7 @@ def _vertical(
 
     mid = distance(glabella, subnasale)
     lower = distance(subnasale, menton)
+    # Hairline missing: compare middle/(middle+lower) with 0.34/(0.34+0.35).
     if trichion is None:
         span = mid + lower
         if span <= 1e-9:
@@ -68,6 +79,8 @@ def _vertical(
     total = distance(trichion, menton)
     if total <= 1e-9:
         return {}, None, ["vertical_span_zero"]
+    # Each third's relative error is averaged. Score is 1 when every
+    # third matches its mean and falls as the mean relative error grows.
     fractions = (
         distance(trichion, glabella) / total,
         mid / total,
@@ -79,6 +92,8 @@ def _vertical(
     return labelled, score, []
 
 
+# Five segments from the subject's right zygion to the left zygion:
+# outer eye, eye width, intercanthal gap, eye width, outer eye.
 def _horizontal(
     points: dict[str, FrontalPoint],
 ) -> tuple[dict[str, float], float | None, list[str]]:

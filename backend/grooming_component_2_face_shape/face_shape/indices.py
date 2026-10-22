@@ -11,14 +11,19 @@ from face_shape.contracts import RatioFeatures
 from face_shape.geometry import PreparedLandmarks, distance
 
 
+# Breadth at or below this value makes a ratio undefined (division by zero).
 _MIN_BREADTH = 1e-9
 
 
+# Raised instead of returning a NaN ratio when a required pair collapses.
 class DegenerateMeasurement(ValueError):
     """Raised when a landmark pair collapses and a ratio is undefined."""
 
 
 def measure_ratios(prepared: PreparedLandmarks) -> RatioFeatures:
+    # MFI uses nasion-menton, JMI uses the gonion pair, FZI uses the
+    # frontotemporale pair, and TFI uses trichion-menton. Every index
+    # is divided by bizygomatic breadth (zygion to zygion).
     points = prepared.points
     left = points.get("zygion_l")
     right = points.get("zygion_r")
@@ -53,6 +58,7 @@ def measure_ratios(prepared: PreparedLandmarks) -> RatioFeatures:
     )
 
 
+# Martin/Farkas percentage form: 100 * measurement / bizygomatic breadth.
 def percentage_index(measurement: float, bizygomatic: float) -> float:
     if bizygomatic <= _MIN_BREADTH:
         raise DegenerateMeasurement("bizygomatic breadth is zero")

@@ -4,6 +4,8 @@ Tier 1 uses eight anthropometric landmarks. Tier 2 may add trichion and a
 jaw-type observation. Symmetry and balance are separate scoring modules.
 """
 
+# Public surface of the face-shape package. Callers should use
+# classify_face for a label and analyse_profile for the frontend payload.
 from face_shape.contracts import (
     CORE_LANDMARKS,
     FACE_SHAPES,

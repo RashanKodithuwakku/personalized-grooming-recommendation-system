@@ -9,10 +9,16 @@ from typing import Literal, Mapping
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
 
 
+# Everyday face-shape labels returned to the frontend. These are the six
+# classes the membership engine scores, not the Martin-Saller bands.
 FaceShapeName = Literal["oval", "round", "square", "oblong", "heart", "diamond"]
+# Jaw labels supplied by Component 1. Used only by the tier-2 tie break.
 JawTypeName = Literal["angular", "rounded", "tapered"]
+# Which optional modifier actually changed a score on this request.
 AppliedModifier = Literal["tfi", "jaw_type"]
+# Pixel points are used as-is. Normalised points are scaled by image size.
 CoordinateMode = Literal["pixel", "normalized"]
+# Morphological class from MFI alone (Martin-Saller). Separate from face_type.
 MorphologicalClass = Literal[
     "Hypereuryprosopic",
     "Euryprosopic",
@@ -21,6 +27,7 @@ MorphologicalClass = Literal[
     "Hyperleptoprosopic",
 ]
 
+# Fixed class order. Ties in select_face_type break toward the earlier name.
 FACE_SHAPES: tuple[FaceShapeName, ...] = (
     "oval",
     "round",
@@ -30,6 +37,7 @@ FACE_SHAPES: tuple[FaceShapeName, ...] = (
     "diamond",
 )
 
+# Six points that must be present before MFI and JMI can be measured.
 REQUIRED_LANDMARKS: tuple[str, ...] = (
     "nasion",
     "menton",
@@ -39,19 +47,24 @@ REQUIRED_LANDMARKS: tuple[str, ...] = (
     "gonion_r",
 )
 
+# Core set plus the two forehead points. Missing forehead points omit FZI.
 CORE_LANDMARKS: tuple[str, ...] = REQUIRED_LANDMARKS + (
     "frontotemporale_l",
     "frontotemporale_r",
 )
 
+# Points that are valid shape input but are not required for a result.
 OPTIONAL_SHAPE_LANDMARKS: tuple[str, ...] = (
     "frontotemporale_l",
     "frontotemporale_r",
     "trichion",
 )
 
+# Inner eye corners. Their line is the preferred axis for roll correction.
 ROLL_LANDMARKS: tuple[str, ...] = ("endocanthion_l", "endocanthion_r")
 
+# Older left/right names accepted at the parse boundary and rewritten
+# to the Component 1 canonical _l / _r names.
 LANDMARK_ALIASES: dict[str, str] = {
     "zygion_left": "zygion_l",
     "zygion_right": "zygion_r",
@@ -93,7 +106,12 @@ MEDIAPIPE_FACE_MESH_INDEX: dict[str, int] = {
 
 
 class LandmarkPoint(BaseModel):
-    """A single frontal-image landmark from Component 1."""
+    """A single frontal-image landmark from Component 1.
+
+    Accepts either separate x/y fields or a Component 1 xy pair. Depth z is
+    stored when present and later dropped before any distance is taken.
+    An invisible point is kept but excluded from measurement.
+    """
 
     model_config = ConfigDict(extra="forbid")
 
@@ -104,6 +122,8 @@ class LandmarkPoint(BaseModel):
     visible: bool = True
     confidence: float | None = Field(default=None, ge=0.0, le=1.0)
 
+    # Copy xy into x and y, then reject missing or non-finite coordinates
+    # on any landmark that is marked visible.
     @model_validator(mode="after")
     def resolve_coordinates(self) -> "LandmarkPoint":
         if self.xy is not None:
@@ -124,7 +144,11 @@ class LandmarkPoint(BaseModel):
 
 
 class ImageSpec(BaseModel):
-    """Frame size required when coordinates are normalised."""
+    """Frame size required when coordinates are normalised.
+
+    Width and height convert a 0-1 coordinate into pixels. On a non-square
+    image this step is required, otherwise height and width are not comparable.
+    """
 
     model_config = ConfigDict(extra="forbid")
 
@@ -134,7 +158,11 @@ class ImageSpec(BaseModel):
 
 
 class Tier1Landmarks(BaseModel):
-    """Points required for MFI and JMI. Frontotemporale may be absent."""
+    """Points required for MFI and JMI. Frontotemporale may be absent.
+
+    Nasion-menton is face height. Zygion pair is bizygomatic breadth.
+    Gonion pair is jaw breadth. Frontotemporale pair is forehead breadth.
+    """
 
     model_config = ConfigDict(extra="forbid")
 
@@ -149,7 +177,11 @@ class Tier1Landmarks(BaseModel):
 
 
 class Tier2Landmarks(BaseModel):
-    """Optional total-face-height point. Absence leaves TFI unused."""
+    """Optional total-face-height point. Absence leaves TFI unused.
+
+    Trichion is the hairline midpoint. Without it the oblong check uses
+    only MFI, and the upper facial third is marked limited.
+    """
 
     model_config = ConfigDict(extra="forbid")
 
@@ -157,7 +189,11 @@ class Tier2Landmarks(BaseModel):
 
 
 class JawTypeObservation(BaseModel):
-    """Jaw-type observation supplied by the landmark component."""
+    """Jaw-type observation supplied by the landmark component.
+
+    Confidence scales how strongly the tier-2 jaw rule may move Square,
+    Round, and Oval when JMI sits near the 83 boundary.
+    """
 
     model_config = ConfigDict(extra="forbid")
 
@@ -166,7 +202,11 @@ class JawTypeObservation(BaseModel):
 
 
 class ClassificationInput(BaseModel):
-    """Typed request accepted by the face shape classifier."""
+    """Typed request accepted by the face shape classifier.
+
+    extra holds bilateral points used by symmetry and fifths (eyes, nose,
+    mouth) that are not part of the shape-index landmark set.
+    """
 
     model_config = ConfigDict(extra="forbid")
 
@@ -178,7 +218,11 @@ class ClassificationInput(BaseModel):
 
 
 class RatioFeatures(BaseModel):
-    """Anthropometric ratios. Uncomputed values stay null."""
+    """Anthropometric ratios. Uncomputed values stay null.
+
+    MFI, JMI, and FZI are percentages of bizygomatic breadth.
+    TFI is a raw height-to-breadth ratio, not a percentage.
+    """
 
     model_config = ConfigDict(extra="forbid")
 
@@ -202,6 +246,8 @@ class FaceShapeResult(BaseModel):
     baseline_label: FaceShapeName | None = None
     processing_notes: list[str] = Field(default_factory=list)
 
+    # The frontend draws six bars, so a result is invalid unless every
+    # class has a finite non-negative confidence.
     @model_validator(mode="after")
     def confidence_covers_every_class(self) -> "FaceShapeResult":
         missing = [name for name in FACE_SHAPES if name not in self.face_type_confidence]
@@ -212,6 +258,7 @@ class FaceShapeResult(BaseModel):
         return self
 
 
+# Rewrite a left/right alias to the canonical name. Unknown names pass through.
 def canonical_landmark_name(name: str) -> str:
     return LANDMARK_ALIASES.get(name, name)
 
@@ -223,6 +270,8 @@ def parse_named_landmarks(payload: Mapping[str, object]) -> ClassificationInput:
     ``jaw_type`` are optional. Invisible frontotemporale points omit FZI.
     """
 
+    # Flatten aliases first, then refuse the request if any of the six
+    # core points is absent. Optional points are filled only when present.
     named = _canonical_payload(payload)
     missing = [name for name in REQUIRED_LANDMARKS if name not in named]
     if missing:
@@ -237,6 +286,8 @@ def parse_named_landmarks(payload: Mapping[str, object]) -> ClassificationInput:
     except ValidationError as exc:
         raise ValueError(f"invalid core landmarks: {exc}") from exc
 
+    # Symmetry and balance landmarks stay in extra. jaw_type and image
+    # are request metadata, not points, so they are kept out of extra.
     extra = {
         name: point
         for name, point in named.items()
@@ -264,6 +315,8 @@ def parse_named_landmarks(payload: Mapping[str, object]) -> ClassificationInput:
         raise ValueError(f"invalid optional fields: {exc}") from exc
 
 
+# Apply alias renaming and drop null landmarks. jaw_type and image are
+# copied unchanged because they are not landmark names.
 def _canonical_payload(payload: Mapping[str, object]) -> dict[str, object]:
     named: dict[str, object] = {}
     for key, value in payload.items():
@@ -277,11 +330,13 @@ def _canonical_payload(payload: Mapping[str, object]) -> dict[str, object]:
     return named
 
 
+# A point can be measured only when it is present, visible, and has x and y.
 def usable_point(point: LandmarkPoint | None) -> LandmarkPoint | None:
     if point is None or not point.visible or point.x is None or point.y is None:
         return None
     return point
 
 
+# Reject NaN and infinities. A plain float comparison treats NaN as unequal to itself.
 def _is_finite(value: float) -> bool:
     return value == value and value not in (float("inf"), float("-inf"))

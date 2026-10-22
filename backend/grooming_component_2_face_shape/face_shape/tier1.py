@@ -14,6 +14,9 @@ from face_shape.rules import hard_threshold_label, morphological_class
 def classify_tier1(sample: ClassificationInput) -> FaceShapeResult:
     """Classify one Component 1 sample with the three core indices."""
 
+    # Measure the three core indices, score the six classes, and attach
+    # the morphological band plus the hard-threshold baseline. Jaw type
+    # is stored on the result but does not change these scores.
     ratios = measure_ratios(prepare_landmarks(sample))
     notes: list[str] = []
     scores = tier1_scores(ratios)

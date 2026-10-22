@@ -14,6 +14,7 @@ from face_shape.contracts import (
 )
 
 
+# One Component 1 landmark: an xy pair, visibility, and extractor confidence.
 class C1Landmark(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -22,6 +23,7 @@ class C1Landmark(BaseModel):
     confidence: float = Field(ge=0.0, le=1.0)
 
 
+# Image size and whether the incoming coordinates are pixels or 0-1.
 class ImageBlock(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -31,6 +33,8 @@ class ImageBlock(BaseModel):
     mirrored_corrected: bool | None = None
 
 
+# Capture quality from Component 1. A rejected status stops scoring.
+# neutral_expression decides whether the mouth pair keeps full weight.
 class QualityBlock(BaseModel):
     model_config = ConfigDict(extra="allow")
 
@@ -39,6 +43,8 @@ class QualityBlock(BaseModel):
     neutral_expression: bool = True
 
 
+# Head pose in degrees. Yaw beyond five degrees flags the symmetry
+# score as limited. pose_ok false marks the whole profile limited.
 class PoseBlock(BaseModel):
     model_config = ConfigDict(extra="allow")
 
@@ -49,6 +55,7 @@ class PoseBlock(BaseModel):
     pose_ok: bool = True
 
 
+# Jaw category already decided by Component 1, plus an optional contour.
 class JawlineBlock(BaseModel):
     model_config = ConfigDict(extra="allow")
 
@@ -57,6 +64,8 @@ class JawlineBlock(BaseModel):
     contour: list[list[float]] | None = None
 
 
+# Hairline observation passed through to the profile for the frontend.
+# The engine itself uses the trichion landmark, not this block.
 class HairlineBlock(BaseModel):
     model_config = ConfigDict(extra="allow")
 
@@ -66,6 +75,7 @@ class HairlineBlock(BaseModel):
     polyline: list[list[float]] | None = None
 
 
+# Full Component 1 JSON accepted by POST /v1/profile.
 class Component1Payload(BaseModel):
     model_config = ConfigDict(extra="allow")
 
@@ -83,6 +93,8 @@ class Component1Payload(BaseModel):
     error: dict[str, Any] | None = None
 
 
+# Convert the Component 1 JSON into the classifier input: landmarks,
+# jaw observation, and image size. Missing core points raise here.
 def to_classification_input(payload: Component1Payload) -> ClassificationInput:
     named: dict[str, object] = {}
     for name, landmark in payload.landmarks.items():

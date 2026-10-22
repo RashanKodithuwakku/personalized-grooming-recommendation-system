@@ -1,3 +1,8 @@
+"""Tier 1 checks: three indices only, no TFI and no jaw-type change.
+
+Each prototype sits on a class plateau. Confidence must sum to 1.
+"""
+
 import pytest
 
 from face_shape.contracts import JawTypeObservation
@@ -17,6 +22,7 @@ from tests.helpers import face
         (87.0, 65.0, 65.0, "diamond"),
     ],
 )
+# One prototype per class. The hard baseline must agree with the soft label.
 def test_core_indices_select_the_matching_class(mfi, jmi, fzi, expected):
     result = classify_tier1(face(mfi, jmi, fzi))
     assert result.face_type == expected
@@ -26,18 +32,21 @@ def test_core_indices_select_the_matching_class(mfi, jmi, fzi, expected):
     assert result.modifiers_applied == []
 
 
+# JMI 90 is past the square cut even when the face is short.
 def test_wide_jaw_short_face_is_square_not_round():
     result = classify_tier1(face(75.0, 90.0, 86.0))
     assert result.face_type == "square"
     assert result.baseline_label == "square"
 
 
+# MFI 90 is oblong before the narrow jaw is considered.
 def test_mfi_ninety_is_oblong_not_heart():
     result = classify_tier1(face(90.0, 65.0, 88.0))
     assert result.face_type == "oblong"
     assert result.baseline_label == "oblong"
 
 
+# Same forehead width: a narrower jaw reads as heart, a wider narrow jaw as diamond.
 def test_mid_fzi_narrow_jaw_splits_heart_and_diamond():
     heart = classify_tier1(face(87.0, 65.0, 76.0))
     diamond = classify_tier1(face(87.0, 72.0, 76.0))
@@ -45,6 +54,7 @@ def test_mid_fzi_narrow_jaw_splits_heart_and_diamond():
     assert diamond.face_type == "diamond"
 
 
+# Without forehead points the narrow jaw stays unresolved.
 def test_missing_fzi_does_not_guess_heart_or_diamond():
     result = classify_tier1(face(87.0, 65.0, fzi=None))
     assert result.face_type not in {"heart", "diamond"}
@@ -52,6 +62,7 @@ def test_missing_fzi_does_not_guess_heart_or_diamond():
     assert result.baseline_label is None
 
 
+# Martin-Saller band edges at 80, 85, 90, and 95.
 def test_morphological_bands():
     assert morphological_class(79.0) == "Hypereuryprosopic"
     assert morphological_class(82.0) == "Euryprosopic"
@@ -60,6 +71,7 @@ def test_morphological_bands():
     assert morphological_class(96.0) == "Hyperleptoprosopic"
 
 
+# Adding z must not move the class. Only x and y are measured.
 def test_depth_does_not_change_the_tier1_label():
     flat = classify_tier1(face(87.0, 78.0, 78.0))
     spatial = classify_tier1(face(87.0, 78.0, 78.0, z=-12.0))
@@ -67,6 +79,7 @@ def test_depth_does_not_change_the_tier1_label():
     assert spatial.face_shape_class == "Mesoprosopic"
 
 
+# Tier 1 stores the jaw observation and does not apply it.
 def test_jaw_type_is_retained_without_changing_the_class():
     sample = face(87.0, 83.0, 83.0)
     sample.jaw_type = JawTypeObservation(label="angular", confidence=0.9)
@@ -77,6 +90,7 @@ def test_jaw_type_is_retained_without_changing_the_class():
     assert observed.modifiers_applied == []
 
 
+# Direct check of the Marinescu-style cuts, independent of membership.
 def test_hard_baseline_uses_locked_cuts():
     notes: list[str] = []
     from face_shape.contracts import RatioFeatures

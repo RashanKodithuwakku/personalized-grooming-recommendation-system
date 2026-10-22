@@ -14,6 +14,8 @@ from pydantic import BaseModel, ConfigDict
 from face_shape.geometry import FrontalPoint, PreparedLandmarks, distance
 
 
+# Bilateral pairs. The right point is reflected across the midline and
+# compared with the left point.
 PAIR_NAMES: tuple[str, ...] = (
     "endocanthion",
     "exocanthion",
@@ -21,7 +23,11 @@ PAIR_NAMES: tuple[str, ...] = (
     "cheilion",
     "gonion",
 )
+# Midline landmarks. Their distance to the line is the deviation,
+# because reflecting them would hide a shift of the jaw or nose.
 MIDLINE_TERMS: tuple[str, ...] = ("subnasale", "menton")
+# Mouth is down-weighted even at rest, and again if the expression
+# is not neutral, because lips move more than bone landmarks.
 DEFAULT_WEIGHTS: dict[str, float] = {
     "endocanthion": 1.0,
     "exocanthion": 1.0,
@@ -31,11 +37,16 @@ DEFAULT_WEIGHTS: dict[str, float] = {
     "subnasale": 1.0,
     "menton": 1.0,
 }
+# Asymmetry index of 5 percent of face width maps to a symmetry score of 0.
 AI_MAX = 5.0
+# Yaw past this angle does not change the number; it adds a limited note.
 YAW_LIMIT = 5.0
+# Mouth weight used when Component 1 says the expression is not neutral.
 CHEILION_EXPRESSION_WEIGHT = 0.25
 
 
+# One landmark's deviation in pixels, the weight used, and signed offsets
+# to the subject's right. Offsets let the frontend show which side is out.
 class PairDeviation(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -46,6 +57,8 @@ class PairDeviation(BaseModel):
     right_offset: float | None = None
 
 
+# symmetry_score is 0-1 for the frontend. asymmetry_index is the
+# percentage form (100 * mean deviation / bizygomatic breadth).
 @dataclass(frozen=True)
 class SymmetryResult:
     symmetry_score: float | None
@@ -54,11 +67,15 @@ class SymmetryResult:
     notes: tuple[str, ...] = ()
 
 
+# Build the midline, average the weighted deviations, scale by face
+# width, then clip 1 - AI/5 into the unit interval.
 def score_symmetry(
     prepared: PreparedLandmarks,
     yaw: float | None = None,
     neutral_expression: bool = True,
 ) -> SymmetryResult:
+    # Without a midline or a face width the score is withheld rather
+    # than reported as a perfect or zero face.
     points = prepared.points
     notes: list[str] = []
     midline = build_midline(points)
@@ -79,6 +96,7 @@ def score_symmetry(
     weight_sum = 0.0
     origin, axis, rightward = midline
 
+    # Reflect each right point onto the left side and measure the gap.
     for name in PAIR_NAMES:
         left = points.get(f"{name}_l")
         right = points.get(f"{name}_r")
@@ -99,6 +117,7 @@ def score_symmetry(
         weighted += weight * deviation
         weight_sum += weight
 
+    # Nose base and chin: perpendicular distance to the midline.
     for name in MIDLINE_TERMS:
         point = points.get(name)
         if point is None:
@@ -114,6 +133,8 @@ def score_symmetry(
     if weight_sum <= 0.0:
         return SymmetryResult(None, None, deviations, tuple(notes + ["symmetry_pairs_missing"]))
 
+    # Mean absolute deviation over bizygomatic breadth, as a percentage.
+    # Score falls linearly and reaches 0 when that percentage hits AI_MAX.
     mad = weighted / weight_sum
     asymmetry_index = (mad / bizygomatic) * 100.0
     score = max(0.0, min(1.0, 1.0 - asymmetry_index / AI_MAX))
@@ -122,6 +143,8 @@ def score_symmetry(
     return SymmetryResult(score, asymmetry_index, deviations, tuple(notes))
 
 
+# Midline origin is nasion. Direction is perpendicular to the eye line
+# and pointed toward menton. rightward is the subject's right.
 def build_midline(
     points: dict[str, FrontalPoint],
 ) -> tuple[FrontalPoint, FrontalPoint, FrontalPoint] | None:
@@ -147,6 +170,7 @@ def build_midline(
     return nasion, perp, rightward
 
 
+# Householder reflection of one point across the midline.
 def reflect_across_line(point: FrontalPoint, origin: FrontalPoint, axis: FrontalPoint) -> FrontalPoint:
     rel = FrontalPoint(x=point.x - origin.x, y=point.y - origin.y)
     along = rel.x * axis.x + rel.y * axis.y
@@ -156,10 +180,12 @@ def reflect_across_line(point: FrontalPoint, origin: FrontalPoint, axis: Frontal
     )
 
 
+# Positive when the point lies to the subject's right of the midline.
 def _signed_offset(point: FrontalPoint, origin: FrontalPoint, rightward: FrontalPoint) -> float:
     return (point.x - origin.x) * rightward.x + (point.y - origin.y) * rightward.y
 
 
+# Unit vector, or None when the two points that formed it coincide.
 def _unit(vector: FrontalPoint) -> FrontalPoint | None:
     length = (vector.x * vector.x + vector.y * vector.y) ** 0.5
     if length <= 1e-12:
@@ -167,6 +193,7 @@ def _unit(vector: FrontalPoint) -> FrontalPoint | None:
     return FrontalPoint(x=vector.x / length, y=vector.y / length)
 
 
+# Face-width normaliser. A zero width makes the asymmetry index undefined.
 def _bizygomatic(points: dict[str, FrontalPoint]) -> float | None:
     left = points.get("zygion_l")
     right = points.get("zygion_r")

@@ -1,8 +1,14 @@
+"""HTTP checks for the shape-only route.
+
+The oval fixture uses MFI 87 and JMI 78, which sits in the oval plateau.
+"""
+
 from fastapi.testclient import TestClient
 
 from face_shape.api import create_app
 
 
+# Pixel landmarks for a mesoprosopic oval: height 87, jaw 78, forehead 78.
 def _landmarks() -> dict[str, dict[str, float]]:
     return {
         "nasion": {"x": 0.0, "y": 0.0},
@@ -16,6 +22,8 @@ def _landmarks() -> dict[str, dict[str, float]]:
     }
 
 
+# The route returns the label, the six-class vector, and echoes hairline
+# and jawline without recomputing them.
 def test_endpoint_identifies_an_oval_face_and_passes_component1_fields():
     client = TestClient(create_app())
     response = client.post(
@@ -47,6 +55,7 @@ def test_endpoint_identifies_an_oval_face_and_passes_component1_fields():
     assert body["jawline"] == {"label": "rounded"}
 
 
+# Component 1 xy pairs and left/right aliases must parse as oval too.
 def test_endpoint_accepts_aliases_and_xy_points():
     client = TestClient(create_app())
     landmarks = {
@@ -64,6 +73,7 @@ def test_endpoint_accepts_aliases_and_xy_points():
     assert response.json()["face_type"] == "oval"
 
 
+# A z value must not change the label. Depth is dropped before ratios.
 def test_endpoint_accepts_depth_on_landmarks():
     client = TestClient(create_app())
     landmarks = {name: {**point, "z": -0.4} for name, point in _landmarks().items()}
@@ -72,6 +82,7 @@ def test_endpoint_accepts_depth_on_landmarks():
     assert response.json()["face_type"] == "oval"
 
 
+# Menton is required for face height, so its absence is HTTP 422.
 def test_endpoint_rejects_a_missing_core_landmark():
     client = TestClient(create_app())
     landmarks = _landmarks()

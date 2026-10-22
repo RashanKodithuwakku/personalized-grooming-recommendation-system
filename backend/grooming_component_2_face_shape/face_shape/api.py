@@ -21,6 +21,8 @@ from face_shape.pipeline import FacialProfile, analyse_profile
 from face_shape.tier2 import classify_face
 
 
+# Slimmer request used by POST /api/component-2/face-shape.
+# It identifies the shape only; it does not run symmetry or balance.
 class FaceShapeRequest(BaseModel):
     """Named landmarks already extracted by Component 1."""
 
@@ -33,6 +35,8 @@ class FaceShapeRequest(BaseModel):
     jawline: dict[str, Any] | None = None
 
 
+# Shape identification returned to a caller that does not need the
+# full profile. Hairline and jawline are echoed, not recomputed.
 class FaceShapeResponse(BaseModel):
     """Identification result for the recommendation component."""
 
@@ -51,17 +55,23 @@ class FaceShapeResponse(BaseModel):
     jawline: dict[str, Any] | None = None
 
 
+# Two routes: /v1/profile is the frontend payload, and
+# /api/component-2/face-shape is shape identification alone.
 def create_app() -> FastAPI:
     app = FastAPI(title="Face shape classification")
 
+    # Liveness check. Does not load a model or touch landmarks.
     @app.get("/health")
     def health() -> dict[str, str]:
         return {"status": "ok"}
 
+    # Full profile for the result screen: shape, symmetry, balance,
+    # and the 0.50 / 0.25 / 0.25 suitability index.
     @app.post("/v1/profile", response_model=FacialProfile)
     def profile(body: Component1Payload) -> FacialProfile:
         return analyse_profile(body)
 
+    # Shape-only route. A bad or incomplete landmark map returns HTTP 422.
     @app.post("/api/component-2/face-shape", response_model=FaceShapeResponse)
     def identify_face(body: FaceShapeRequest) -> FaceShapeResponse:
         payload: dict[str, object] = {
@@ -93,4 +103,5 @@ def create_app() -> FastAPI:
     return app
 
 
+# Module-level app so uvicorn can load face_shape.api:app.
 app = create_app()

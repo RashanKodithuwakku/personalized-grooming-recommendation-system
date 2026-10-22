@@ -18,16 +18,21 @@ from face_shape.contracts import (
 )
 
 
+# image_2d: no depth was sent. projected_3d: every usable point had z.
+# partial_depth: only some points had z. In all three cases z is dropped.
 CoordinateFrame = Literal["image_2d", "projected_3d", "partial_depth"]
 CoordinateScale = Literal["pixel", "normalized"]
 
 
+# One landmark after depth is removed. All later distances use this type.
 @dataclass(frozen=True)
 class FrontalPoint:
     x: float
     y: float
 
 
+# Output of landmark preparation: roll-corrected frontal points, whether
+# a rotation was applied, and the optional hairline point kept aside.
 @dataclass(frozen=True)
 class PreparedLandmarks:
     frame: CoordinateFrame
@@ -40,6 +45,9 @@ class PreparedLandmarks:
 def prepare_landmarks(sample: ClassificationInput) -> PreparedLandmarks:
     """Project one Component 1 sample onto the frontal pixel plane."""
 
+    # Collect named points, record whether depth was present, convert to
+    # pixels, then rotate the set so later horizontal and vertical
+    # measurements are not tilted by head roll.
     named = _named_points(sample)
     frame = _frame(named)
     scale: CoordinateScale = "pixel"
@@ -76,6 +84,8 @@ def to_pixels(point: LandmarkPoint, sample: ClassificationInput) -> FrontalPoint
     return FrontalPoint(x=point.x, y=point.y)
 
 
+# Drop z and keep the image-plane coordinates. Used when the caller
+# already knows the point is in pixels.
 def to_frontal(point: LandmarkPoint) -> FrontalPoint:
     """Keep the frontal axes of a pixel point or a three-dimensional point."""
 
@@ -83,6 +93,8 @@ def to_frontal(point: LandmarkPoint) -> FrontalPoint:
     return FrontalPoint(x=point.x, y=point.y)
 
 
+# Euclidean distance on the frontal plane. This is the only distance
+# used by indices, symmetry, and balance.
 def distance(start: FrontalPoint, end: FrontalPoint) -> float:
     dx = end.x - start.x
     dy = end.y - start.y
@@ -92,6 +104,8 @@ def distance(start: FrontalPoint, end: FrontalPoint) -> float:
 def roll_correct(points: dict[str, FrontalPoint]) -> tuple[dict[str, FrontalPoint], bool]:
     """Rotate so the intercanthal line is horizontal when both eyes exist."""
 
+    # Preferred axis: make the line between the inner eye corners horizontal.
+    # Fallback: make nasion-menton vertical when either eye point is missing.
     left = points.get("endocanthion_l")
     right = points.get("endocanthion_r")
     if left is not None and right is not None:
@@ -108,6 +122,8 @@ def roll_correct(points: dict[str, FrontalPoint]) -> tuple[dict[str, FrontalPoin
     return _rotate_all(points, nasion, angle), True
 
 
+# Rotate every point about origin by angle radians. A near-zero angle
+# is left unchanged so symmetric fixtures stay bitwise stable.
 def _rotate_all(
     points: dict[str, FrontalPoint], origin: FrontalPoint, angle: float
 ) -> dict[str, FrontalPoint]:
@@ -126,6 +142,7 @@ def _rotate_all(
     return rotated
 
 
+# Merge tier-1 points, trichion, and extra bilateral points into one map.
 def _named_points(sample: ClassificationInput) -> dict[str, LandmarkPoint]:
     named: dict[str, LandmarkPoint] = {}
     for name in CORE_LANDMARKS:
@@ -138,6 +155,8 @@ def _named_points(sample: ClassificationInput) -> dict[str, LandmarkPoint]:
     return named
 
 
+# Label how much depth arrived. The label is recorded only; distances
+# never use z.
 def _frame(named: dict[str, LandmarkPoint]) -> CoordinateFrame:
     usable = [point for point in named.values() if usable_point(point) is not None]
     present = [point.z is not None for point in usable]
@@ -148,6 +167,8 @@ def _frame(named: dict[str, LandmarkPoint]) -> CoordinateFrame:
     return "image_2d"
 
 
+# When the request omits image size, values larger than 1.5 are treated
+# as pixels. Values inside the unit range are treated as normalised.
 def _inferred_scale(named: dict[str, LandmarkPoint]) -> CoordinateScale:
     usable = [point for point in named.values() if usable_point(point) is not None]
     if not usable:
