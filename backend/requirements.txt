@@ -1,0 +1,11 @@
+fastapi>=0.110
+uvicorn[standard]>=0.27
+python-multipart>=0.0.9
+pydantic>=2.6
+numpy>=1.26
+opencv-python>=4.8
+Pillow>=10.0
+torch>=2.1
+torchvision>=0.16
+# Recommended for better face landmarks (optional fallback is built in):
+mediapipe>=0.10

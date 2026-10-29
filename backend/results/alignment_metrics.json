@@ -1,0 +1,31 @@
+{
+  "input_file": "alignment_pairs.json",
+  "sample_count": 1,
+  "metric_note": "NME is Euclidean held-out landmark error divided by the distance between user landmarks 1 and 2, multiplied by 100. Lower is better. First 3 landmarks are fit anchors and are excluded from error calculation.",
+  "results": [
+    {
+      "id": "panel_test_user_001",
+      "baseline_mean_nme_percent": 21.016998291015625,
+      "baseline_median_nme_percent": 17.785398483276367,
+      "affine_mean_nme_percent": 13.889548301696777,
+      "affine_median_nme_percent": 13.807366371154785,
+      "held_out_landmarks": 3,
+      "affine_matrix": [
+        [
+          1.8825478645066274,
+          0.10198821796759917,
+          -311.9495581737849
+        ],
+        [
+          0.10787923416789413,
+          1.0003681885125184,
+          -39.638807069219474
+        ]
+      ]
+    }
+  ],
+  "aggregate": {
+    "baseline_mean_nme_percent": 21.016998291015625,
+    "affine_mean_nme_percent": 13.889548301696777
+  }
+}

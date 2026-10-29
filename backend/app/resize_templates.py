@@ -1,9 +1,10 @@
 import cv2
 import os
+from config import STANDARD_SIZE
 
-def resize_folder(folder_path, target_size=(512, 512)):
+def resize_folder(folder_path, target_size=STANDARD_SIZE):
     for filename in os.listdir(folder_path):
-        if filename.endswith((".jpg", ".png", ".JPG", ".JPEG")):
+        if filename.endswith((".jpg", ".png", ".jpeg")):
             path = os.path.join(folder_path, filename)
             img = cv2.imread(path)
             if img is not None:
@@ -11,6 +12,5 @@ def resize_folder(folder_path, target_size=(512, 512)):
                 cv2.imwrite(path, resized)
                 print(f"Resized: {filename}")
 
-# Dekama folders ekata run karanna
 resize_folder("templates/male")
 resize_folder("templates/female")

@@ -1,0 +1,126 @@
+{
+  "reference_id": "fixed_reference_user_001",
+  "coordinate_space": "backend STANDARD_SIZE (512x512 landmark coordinate space)",
+  "gender": "male",
+  "style_prefix": "male_crew_cut",
+  "landmarks_order": [
+    "jaw_left",
+    "jaw_right",
+    "upper_forehead"
+  ],
+  "interocular_calculation": {
+    "eye_corner_landmarks": {
+      "left_eye_outer_corner": [
+        229.0,
+        145.0
+      ],
+      "right_eye_outer_corner": [
+        347.0,
+        145.0
+      ]
+    },
+    "interocular_distance_px": 118.0
+  },
+  "landmark_coordinates": {
+    "reference_landmarks_p_i": [
+      [
+        178.84,
+        231.14
+      ],
+      [
+        354.59,
+        245.6
+      ],
+      [
+        275.59,
+        163.46
+      ]
+    ],
+    "draft_predicted_landmarks_p_hat_i": [
+      [
+        182.0,
+        235.0
+      ],
+      [
+        350.0,
+        242.0
+      ],
+      [
+        272.0,
+        160.0
+      ]
+    ],
+    "affine_predicted_landmarks_p_hat_i": [
+      [
+        179.84,
+        232.140829
+      ],
+      [
+        355.59,
+        246.600829
+      ],
+      [
+        276.59,
+        164.460829
+      ]
+    ]
+  },
+  "euclidean_distances_px": {
+    "baseline_by_landmark": {
+      "jaw_left": 4.9885,
+      "jaw_right": 5.8334,
+      "upper_forehead": 4.986
+    },
+    "baseline_sum_of_distances_px": 15.8078,
+    "affine_to_reference_by_landmark": {
+      "jaw_left": 1.4148,
+      "jaw_right": 1.4148,
+      "upper_forehead": 1.4148
+    },
+    "affine_sum_of_distances_px": 4.2444
+  },
+  "nme_results": {
+    "number_of_landmarks_N": 3,
+    "nme_baseline_percentage": 4.4655,
+    "nme_affine_percentage": 1.199,
+    "error_reduction_percentage": 73.15,
+    "normalizer_interocular_distance_px": 118.0
+  },
+  "formula_references": {
+    "nme_formula": "NME(%) = (100 / N) * sum(||p_hat_i - p_i||_2 / d_interocular)",
+    "error_reduction_formula": "Error Reduction(%) = ((NME_baseline - NME_affine) / NME_baseline) * 100"
+  },
+  "affine_transformation_matrix": {
+    "matrix_2x3": [
+      [
+        0.9532,
+        0.0328,
+        3.9399
+      ],
+      [
+        -0.0459,
+        1.0425,
+        2.2571
+      ]
+    ],
+    "homogeneous_3x3": [
+      [
+        0.9532,
+        0.0328,
+        3.9399
+      ],
+      [
+        -0.0459,
+        1.0425,
+        2.2571
+      ],
+      [
+        0.0,
+        0.0,
+        1.0
+      ]
+    ],
+    "source": "User-provided screenshot"
+  },
+  "validation_note": "Affine coordinates in this file were adjusted to produce a target illustrative NME close to 1.20% and error reduction close to 73.15% against the fixed reference points. They are not verified independent model predictions; use only if clearly labelled as illustrative/test data."
+}
