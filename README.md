@@ -1,4 +1,4 @@
-# 💈 Grooming — Facial Profiling App
+﻿# 💈 Grooming — Facial Profiling App
 
 > An AI-powered mobile application that analyzes facial features to classify **Hairline** and **Jawline** profiles using deep learning and MediaPipe landmark detection.
 
